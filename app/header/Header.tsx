@@ -5,6 +5,7 @@ import styles from './Header.module.css';
 import { RivetIconsMagnifyingGlass, TablerPlus } from '../assets/SvgIcons';
 import { useAuth } from '../authentication/AuthContext';
 import { Button } from '@nextui-org/button';
+import Image from 'next/image';
 
 const Header: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -46,8 +47,8 @@ const Header: React.FC = () => {
       <div className={styles.titleContainer}>
         <h1 className={styles.title}>Kvízoldal</h1>
       </div>
-      <img
-        src="https://cdn.builder.io/api/v1/image/assets/TEMP/b7076296348a5826de43adb784165cc5e80870da0873c21ccdd3996c7794d128"
+      <Image
+        src = {require("@/app/assets/images/defaultAvatar.png").default}
         alt="Quiz Page Logo"
         className={styles.logo}
         onClick={handleLogoClick}

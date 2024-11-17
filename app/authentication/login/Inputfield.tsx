@@ -1,5 +1,6 @@
 import React from 'react';
 import styles from './KvizoldalLogin.module.css';
+import Image from 'next/image';
 
 interface InputFieldProps {
   label: string;
@@ -22,12 +23,12 @@ const InputField: React.FC<InputFieldProps> = ({ label, value, type = 'text', on
       placeholder={type === 'password' ? '********' : label}
     />
     {type === 'password' && (
-      <img
-        loading="lazy"
-        src="https://cdn.builder.io/api/v1/image/assets/TEMP/476bad95e9a2e85470dec1f9f590a14ccaf876f8161800d8ee094e0968475731?placeholderIfAbsent=true&apiKey=1654bbdc21cd4e3d8ecec46f24c8e6ed"
-        className={styles.visibilityIcon}
-        alt=""
-      />
+      <Image
+      loading="lazy"
+      src={require("@/app/assets/images/eye.png").default}
+      className={styles.visibilityIcon}
+      alt=""
+    />
     )}
   </div>
 );

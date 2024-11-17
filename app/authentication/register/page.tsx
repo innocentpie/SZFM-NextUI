@@ -7,6 +7,7 @@ import { useAuth } from '../AuthContext';
 
 import { Input } from "@nextui-org/input";
 import { Button } from '@nextui-org/button';
+import Image from 'next/image';
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -40,9 +41,9 @@ const RegisterPage: React.FC = () => {
   return (
     <main className={styles.loginContainer}>
       <div className={styles.contentWrapper}>
-        <img
+        <Image
           loading="lazy"
-          src="https://cdn.builder.io/api/v1/image/assets/TEMP/bb0f45de091b24acb03b613b24d1467fed7e95a923c31f3dd5ac28a8ccb8d09b?placeholderIfAbsent=true&apiKey=1654bbdc21cd4e3d8ecec46f24c8e6ed"
+          src={require("@/app/assets/images/LoginBackground.png").default}
           className={styles.backgroundImage}
           alt="Background"
         />
