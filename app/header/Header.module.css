@@ -21,28 +21,15 @@
 
 .searchButton,
 .createButton {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  font-size: 23px;
-  color: #fff;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-  width: 11rem;
-  height: 3.25rem;
+  font-size: 1.5rem;
   margin: auto;
+  height: 3rem;
+  color:white;
 }
 
-.searchButton {
-  background-color: #434ce6;
+.createButton{
+  background-color: #2DDB41;
 }
-
-.createButton {
-  background-color: #2ddb41;
-}
-
 .icon {
   width: 2rem;
   height: 2rem;

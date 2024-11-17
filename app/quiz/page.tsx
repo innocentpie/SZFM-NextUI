@@ -6,8 +6,8 @@ import { MdiFlask } from '../assets/SvgIcons';
 import './homepage.css';
 import Header from "../header/Header";
 
-import {Button, Card, CardBody, CardFooter, CardHeader, Chip, Image, ScrollShadow} from "@nextui-org/react";
-import {Divider} from "@nextui-org/divider";
+import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Image, ScrollShadow } from "@nextui-org/react";
+import { Divider } from "@nextui-org/divider";
 
 const API_URL = 'http://127.0.0.1:8090/api/collections/quizzes/records';
 
@@ -62,29 +62,16 @@ export default function QuizPage() {
       case 3:
         return 'Nehéz'; // Piros - nehéz
       default:
-        return '???'; // Alapértelmezett szürke
+        return '#D3D3D3'; // Alapértelmezett szürke
     }
   }
 
-  // const getDarkerShade = (color: string) => {
-  //   try {
-  //     return chroma(color).saturate(1).darken(1).hex();
-  //   } catch (error) {
-  //     console.error(`Hibás színérték: ${color}`, error);
-  //     return '#000000';
-  //   }
-  // };
-
   //ha tölt az oldal vagy a quizek akkor ezt írja ki
-  if (loading || quizLoading) {
-    return (<><div><h1><p>Betöltés...</p></h1></div></>);
-  }
+  if (loading || quizLoading) return (<><div><h1><p>Betöltés...</p></h1></div></>);
 
   //ha nincs bejelentkezve és valahogy mégis eléri az oldalt akkor egyszerűen visszatér a program
   //technikailag nem lehetséges mert azonnal visszairányítja a login oldalra
-  if (!user) {
-    return;
-  }
+  if (!user) return;
 
   return (
     <>
@@ -92,40 +79,12 @@ export default function QuizPage() {
       <div className='main-container'>
         <div className='secondary-container'>
           {quizzes.map((quiz) => (
-            // <div key={quiz.id} className='rectangle' style={{ background: quiz.card_color }}>
-            //   <h4 className='quiz-description'>{quiz.quiz_description}</h4>
-            //   <span className='quiz-creator'>Készítő: {quiz.creator ? quiz.creator : 'default'}</span>
-            //   <div className='flex-row'>
-            //     <div className='line' />
-            //     <span className='span'>{quiz.number_of_questions}</span>
-            //     <span className='questions'>Kérdések:</span>
-            //     <MdiFlask className='icon' />
-            //     <span className='kat'>Kat.:</span>
-            //     <span className='difficulty'>Nehézség</span>
-            //     <div
-            //       className='rectangle-1'
-            //       style={{
-            //         background: getBackgroundColor(quiz.difficulty),
-            //       }} />
-            //   </div>
-            //   <div className='line-4' />
-            //   <div className='line-5' />
-            //   <div className='rectangle-2' style={{ background: getDarkerShade(quiz.card_color) }}>
-            //     <button className='button'>
-            //       <span className='kitoltas'>Kitöltés</span>
-            //     </button>
-            //     <button className='rectangle-3'>
-            //       <span className='ranglista'>Ranglista</span>
-            //     </button>
-            //   </div>
-            // </div>
-
-            <Card className='m-2' shadow="sm" key={quiz.id}>
+            <Card className='m-2 quiz-card' shadow="sm" key={quiz.id}>
               <CardHeader
-              className='difficulty-chip-div'
-              style={{
-                         background: getBackgroundColor(quiz.difficulty),
-              }}>
+                className='difficulty-chip-div'
+                style={{
+                  background: getBackgroundColor(quiz.difficulty),
+                }}>
                 <div>
                   <MdiFlask className='icon' />
                 </div>

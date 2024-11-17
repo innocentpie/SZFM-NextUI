@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import styles from './Header.module.css';
 import { RivetIconsMagnifyingGlass, TablerPlus } from '../assets/SvgIcons';
 import { useAuth } from '../authentication/AuthContext';
+import { Button } from '@nextui-org/button';
 
 const Header: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -33,14 +34,14 @@ const Header: React.FC = () => {
   return (
     <header className={styles.header}>
       <nav className={styles.navigation}>
-        <button className={styles.searchButton}>
-          <span>Keresés</span>
-          <RivetIconsMagnifyingGlass className={styles.icon} />
-        </button>
-        <button className={styles.createButton}>
-          <span>Létrehozás</span>
-          <TablerPlus className={styles.icon2} />
-        </button>
+      <Button color="primary" className={styles.searchButton}>
+        <span>Keresés</span>
+        <RivetIconsMagnifyingGlass className={styles.icon} />
+      </Button>
+      <Button className={styles.createButton}>
+        <span>Létrehozás</span>
+        <TablerPlus className={styles.icon2} />
+      </Button>
       </nav>
       <div className={styles.titleContainer}>
         <h1 className={styles.title}>Kvízoldal</h1>
