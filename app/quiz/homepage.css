@@ -14,9 +14,10 @@
 
 .secondary-container{
   margin: auto;
+  margin-top: 16px;
   padding: 4.5rem 0 0 1rem;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(5, 1fr);
   width: 66rem;
   height: auto;
 }
@@ -24,28 +25,24 @@
 .rectangle {
   width: 31rem;
   height: 12rem;
-  border: 0.25rem solid #ffffff;
+  border: 0.15rem solid #ffffff;
   z-index: 2;
-  border-radius: 1rem;
+  /* border-radius: 1rem; */
   margin-bottom: 0.5rem;
   backdrop-filter: blur(3.75px);
   opacity: 0.9;
 }
 
 .quiz-description {
-  width: 61%;
-  height: 51%;
-  padding-right: 1rem;
-  margin: 0.5rem 0 0 1rem;
-  color: #ffffff;
-  font-size: 1.25rem;
-  line-height: 1.5rem;
-  text-align: left;
-  z-index: 16;
-  white-space: pre-wrap;
   word-wrap: break-word;
   word-break: break-all;
-  overflow: scroll;
+  overflow: hidden;
+}
+
+.difficulty-chip-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .quiz-creator {
@@ -124,12 +121,8 @@
 }
 
 .icon {
-  position: absolute;
-  top: 78.5%;
-  left: 41%;
   width: 2rem;
   height: 2rem;
-  z-index: 15;
 }
 
 .kat {
