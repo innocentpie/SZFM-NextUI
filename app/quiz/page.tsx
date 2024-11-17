@@ -5,7 +5,6 @@ import { useAuth } from '../authentication/AuthContext';
 import { MdiFlask } from '../assets/SvgIcons';
 import './homepage.css';
 import Header from "../header/Header";
-import chroma from 'chroma-js';
 
 import {Button, Card, CardBody, CardFooter, CardHeader, Chip, Image} from "@nextui-org/react";
 import {Divider} from "@nextui-org/divider";
@@ -67,14 +66,14 @@ export default function QuizPage() {
     }
   }
 
-  const getDarkerShade = (color: string) => {
-    try {
-      return chroma(color).saturate(1).darken(1).hex();
-    } catch (error) {
-      console.error(`Hibás színérték: ${color}`, error);
-      return '#000000';
-    }
-  };
+  // const getDarkerShade = (color: string) => {
+  //   try {
+  //     return chroma(color).saturate(1).darken(1).hex();
+  //   } catch (error) {
+  //     console.error(`Hibás színérték: ${color}`, error);
+  //     return '#000000';
+  //   }
+  // };
 
   //ha tölt az oldal vagy a quizek akkor ezt írja ki
   if (loading || quizLoading) {
