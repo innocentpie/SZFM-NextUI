@@ -6,7 +6,7 @@ import { MdiFlask } from '../assets/SvgIcons';
 import './homepage.css';
 import Header from "../header/Header";
 
-import {Button, Card, CardBody, CardFooter, CardHeader, Chip, Image} from "@nextui-org/react";
+import {Button, Card, CardBody, CardFooter, CardHeader, Chip, Image, ScrollShadow} from "@nextui-org/react";
 import {Divider} from "@nextui-org/divider";
 
 const API_URL = 'http://127.0.0.1:8090/api/collections/quizzes/records';
@@ -140,13 +140,17 @@ export default function QuizPage() {
                   <p className="text-small mt-1">{quiz.quiz_description}</p>
                 </div>
               </CardBody>
-              <CardFooter>
-                <Button className='mr-1' color='primary'>
-                   <span>Kitöltés</span>
-                 </Button>
-                 <Button className='ml-1' color='secondary'>
-                  <span>Ranglista</span>
-                </Button>
+              <CardFooter className='quiz-card-footer'>
+                <div>
+                  <Button className='mr-1' color='primary'>
+                    <span>Kitöltés</span>
+                  </Button>
+                </div>
+                <div>
+                  <Button className='ml-1' color='secondary'>
+                    <span>Ranglista</span>
+                  </Button>
+                </div>
               </CardFooter>
             </Card>
           ))}

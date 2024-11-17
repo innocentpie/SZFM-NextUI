@@ -10,7 +10,7 @@
   width: 68rem;
   height: 100vh;
   margin: auto;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .secondary-container{
@@ -18,7 +18,7 @@
   margin-top: 16px;
   padding: 4.5rem 0 0 1rem;
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   width: 66rem;
   height: auto;
 }
@@ -277,4 +277,11 @@
     margin-bottom: 0.5rem;
     backdrop-filter: blur(3.75px);
   }
+}
+
+
+.quiz-card-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
