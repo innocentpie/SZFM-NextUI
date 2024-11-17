@@ -1,12 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 'use client';
 
 import React, { useState } from 'react';
 import pb from '../PocketBaseClient';
 import styles from './KvizoldalLogin.module.css';
-import InputField from './Inputfield';
-import { useRouter } from 'next/navigation';
 import { useAuth } from '../AuthContext';
 
 import { Input } from "@nextui-org/input";
@@ -18,7 +14,6 @@ const RegisterPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
   const { login } = useAuth();
 
   const handleRegister = async (e: React.FormEvent) => {

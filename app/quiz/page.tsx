@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// app/quiz/page.tsx
-
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -8,6 +5,7 @@ import { useAuth } from '../authentication/AuthContext';
 import { MdiFlask } from '../assets/SvgIcons';
 import './homepage.css';
 import Header from "../header/Header";
+import chroma from 'chroma-js';
 
 import {Button, Card, CardBody, CardFooter, CardHeader, Chip, Image} from "@nextui-org/react";
 import {Divider} from "@nextui-org/divider";
