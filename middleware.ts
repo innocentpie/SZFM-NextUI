@@ -23,7 +23,7 @@ export async function middleware(req: NextRequest) {
     if (pathname.startsWith('/quiz')) {
       return NextResponse.redirect(new URL('/authentication/login', req.url));
     }
-    return NextResponse.next();
+    return NextResponse.redirect(new URL('/authentication/login', req.url));
   }
 }
 

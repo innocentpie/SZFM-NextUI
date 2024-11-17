@@ -10,11 +10,12 @@
   width: 68rem;
   height: 100vh;
   margin: auto;
+  overflow-y: scroll;
 }
 
 .secondary-container{
   margin: auto;
-  padding: 4.5rem 0 0 1rem;
+  padding: 5rem 0 0 1rem;
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   width: 66rem;
@@ -29,7 +30,6 @@
   border-radius: 1rem;
   margin-bottom: 0.5rem;
   backdrop-filter: blur(3.75px);
-  opacity: 0.9;
 }
 
 .quiz-description {
@@ -45,7 +45,10 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   word-break: break-all;
-  overflow: scroll;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: #ffffff #a8a2a2;
+  scrollbar-width: thin;
 }
 
 .quiz-creator {
@@ -148,7 +151,7 @@
 .difficulty {
   position: absolute;
   top: 78.5%;
-  left: 51%;
+  left: 50%;
   color: #f6f6f6;
   font-size: 1.25rem;
   line-height: 2rem;
@@ -230,7 +233,7 @@
 
 @media (max-width: 1050px) {
   .main-container {
-    overflow: scroll;
+    overflow: auto;
     width: 42.5rem;
     margin: auto;
   }
@@ -256,7 +259,7 @@
 
 @media (min-width: 2000px) {
   .main-container {
-    overflow: scroll;
+    overflow: auto;
     margin-left: -10%;
     width: 125rem;
     margin: auto;
