@@ -12,6 +12,8 @@ import { EyeSlashFilledIcon } from '@/components/EyeSlashFilledIcon';
 import { EyeFilledIcon } from '@/components/EyeFilledIcon';
 
 const RegisterPage: React.FC = () => {
+  let emailInputElement = React.createRef<HTMLInputElement>();
+
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -22,11 +24,27 @@ const RegisterPage: React.FC = () => {
   const [isVisible, setIsVisible] = React.useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
 
+  const [emailValue, setEmailValue] = React.useState("");
+
+  const validateEmail = (value: string) => value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g);
+
+  const isInvalid = React.useMemo(() => {
+    if (emailValue === "") return false;
+
+    return validateEmail(emailValue) ? false : true;
+  }, [emailValue]);
+
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
+      if(!validateEmail(email))
+      {
+        emailInputElement.current?.focus(); 
+        return;
+      }
+
       const data = {
         "username": username,
         "email": email,
@@ -47,12 +65,6 @@ const RegisterPage: React.FC = () => {
   return (
     <main className={styles.loginContainer}>
       <div className={styles.contentWrapper}>
-        <Image
-          loading="lazy"
-          src={require("@/app/assets/images/LoginBackground.png").default}
-          className={styles.backgroundImage}
-          alt="Background"
-        />
         <div className={styles.loginFormWrapper}>
           <h1 className={styles.pageTitle}>Kvízoldal</h1>
           <section className={styles.formSection}>
@@ -73,12 +85,17 @@ const RegisterPage: React.FC = () => {
                     onChange={(e) => setUsername(e.target.value)}
                   />
                   <Input
-                    className={styles.inputField}
+                    className="inputField inputFieldTopM"
                     variant='faded'
                     isRequired
                     required
                     label="Email"
+                    ref={emailInputElement}
                     value={email}
+                    isInvalid={isInvalid}
+                    color={isInvalid ? "danger" : "default"}
+                    errorMessage="Kérjük érvényes emailt adjon meg"
+                    onValueChange={setEmailValue}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   <Input

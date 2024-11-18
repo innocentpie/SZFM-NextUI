@@ -12,6 +12,8 @@ import {EyeSlashFilledIcon} from "@/components/EyeSlashFilledIcon";
 
 
 const LoginPage: React.FC = () => {
+  let emailInputElement = React.createRef<HTMLInputElement>();
+
   const { login } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -21,11 +23,27 @@ const LoginPage: React.FC = () => {
   const [isVisible, setIsVisible] = React.useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
 
+  const [emailValue, setEmailValue] = React.useState("");
+
+  const validateEmail = (value: string) => value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g);
+
+  const isInvalid = React.useMemo(() => {
+    if (emailValue === "") return false;
+
+    return validateEmail(emailValue) ? false : true;
+  }, [emailValue]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
     try {
+      if(!validateEmail(email))
+      {
+        emailInputElement.current?.focus(); 
+        return;
+      }
+
       await login(email, password);
     } catch (err: any) {
       setError(err.message || 'Hiba történt a bejelentkezés során.');
@@ -60,7 +78,12 @@ const LoginPage: React.FC = () => {
                     required
                     variant='faded'
                     label="Email"
+                    ref={emailInputElement}
                     value={email}
+                    isInvalid={isInvalid}
+                    color={isInvalid ? "danger" : "default"}
+                    errorMessage="Kérjük érvényes emailt adjon meg"
+                    onValueChange={setEmailValue}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   <Input
