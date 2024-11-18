@@ -2,12 +2,13 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../AuthContext';
-import styles from './KvizoldalLogin.module.css';
-import InputField from './Inputfield';
+import styles from '../KvizoldalLogin.module.css';
 
 import { Input } from "@nextui-org/input";
 import { Button } from '@nextui-org/button';
 import Image from 'next/image'
+import {EyeFilledIcon} from "@/components/EyeFilledIcon";
+import {EyeSlashFilledIcon} from "@/components/EyeSlashFilledIcon";
 
 
 const LoginPage: React.FC = () => {
@@ -16,6 +17,9 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  const [isVisible, setIsVisible] = React.useState(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,12 +38,12 @@ const LoginPage: React.FC = () => {
   return (
     <main className={styles.loginContainer}>
       <div className={styles.contentWrapper}>
-        <Image
+        {/* <Image
           loading="lazy"
           src={require("@/app/assets/images/LoginBackground.png").default}
           className={styles.backgroundImage}
           alt="Background"
-        />
+        /> */}
         <div className={styles.loginFormWrapper}>
           <h1 className={styles.pageTitle}>Kvízoldal</h1>
           <section className={styles.formSection}>
@@ -66,7 +70,16 @@ const LoginPage: React.FC = () => {
                     label="Jelszó"
                     variant='faded'
                     value={password}
-                    type="password"
+                    endContent={
+                      <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+                        {isVisible ? (
+                          <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        ) : (
+                          <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        )}
+                      </button>
+                    }
+                    type={isVisible ? "text" : "password"}
                     onChange={(e) => setPassword(e.target.value)}
                   />
 

@@ -2,12 +2,14 @@
 
 import React, { useState } from 'react';
 import pb from '../PocketBaseClient';
-import styles from './KvizoldalLogin.module.css';
+import styles from '../KvizoldalLogin.module.css';
 import { useAuth } from '../AuthContext';
 
 import { Input } from "@nextui-org/input";
 import { Button } from '@nextui-org/button';
 import Image from 'next/image';
+import { EyeSlashFilledIcon } from '@/components/EyeSlashFilledIcon';
+import { EyeFilledIcon } from '@/components/EyeFilledIcon';
 
 const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
@@ -16,6 +18,9 @@ const RegisterPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
+
+  const [isVisible, setIsVisible] = React.useState(false);
+  const toggleVisibility = () => setIsVisible(!isVisible);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,6 +38,7 @@ const RegisterPage: React.FC = () => {
       await login(email, password);
     } catch (err: any) {
       setError('Hiba történt a regisztráció során. Lehet hogy már létezik a felhasználó.');
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -82,7 +88,16 @@ const RegisterPage: React.FC = () => {
                     required
                     label="Jelszó"
                     value={password}
-                    type="password"
+                    endContent={
+                      <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
+                        {isVisible ? (
+                          <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        ) : (
+                          <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        )}
+                      </button>
+                    }
+                    type={isVisible ? "text" : "password"}
                     onChange={(e) => setPassword(e.target.value)}
                   />
                 </div>
