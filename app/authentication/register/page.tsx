@@ -4,10 +4,8 @@ import React, { useState } from 'react';
 import pb from '../PocketBaseClient';
 import styles from '../KvizoldalLogin.module.css';
 import { useAuth } from '../AuthContext';
-
 import { Input } from "@nextui-org/input";
 import { Button } from '@nextui-org/button';
-import Image from 'next/image';
 import { EyeSlashFilledIcon } from '@/components/EyeSlashFilledIcon';
 import { EyeFilledIcon } from '@/components/EyeFilledIcon';
 
@@ -51,8 +49,9 @@ const RegisterPage: React.FC = () => {
         "emailVisibility": true,
         "password": password,
         "passwordConfirm": password,
+        "profile_picture": "avatar1",
       };
-      const record = await pb.collection('users').create(data);
+      await pb.collection('users').create(data);
       await login(email, password);
     } catch (err: any) {
       setError('Hiba történt a regisztráció során. Lehet hogy már létezik a felhasználó.');

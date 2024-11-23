@@ -1,84 +1,120 @@
 'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './Header.module.css';
 import { RivetIconsMagnifyingGlass, TablerPlus } from '../assets/SvgIcons';
 import { useAuth } from '../authentication/AuthContext';
 import { Button } from '@nextui-org/button';
 import Image from 'next/image';
+import ProfileOptionsModal from '../Modals/ProfileOptionsModal';
+import MyQuizzesModal from '../Modals/MyQuizzesModal';
+import EditProfileModal from '../Modals/EditProfileModal';
+import avatarImages from '../assets/avatarImages';
+import { useRouter } from 'next/navigation';
 
 const Header: React.FC = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const { logout } = useAuth();
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isProfileOptionsOpen, setIsProfileOptionsOpen] = useState(false);
+  const [isMyQuizzesOpen, setIsMyQuizzesOpen] = useState(false);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const { user } = useAuth();
+  const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
-  const handleLogoClick = () => {
-    setIsModalOpen(true);
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchTerm) {
+        router.push(`?search=${encodeURIComponent(searchTerm)}`);
+      } else {
+        router.push(`/quiz`);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, router]);
+
+  const handleAvatarClick = () => {
+    setIsProfileOptionsOpen(true);
   };
 
-  const handleCloseModal = () => {
-    setIsModalOpen(false);
+  const handleCloseProfileOptions = () => {
+    setIsProfileOptionsOpen(false);
   };
 
-  const handleLogout = async () => {
-    setIsLoggingOut(true);
-    try {
-      await logout();
-      setIsModalOpen(false);
-    } catch (error) {
-      console.error('Kijelentkezési hiba:', error);
-    } finally {
-      setIsLoggingOut(false);
+  const handleSelectOption = (option: 'myQuizzes' | 'editProfile') => {
+    if (option === 'myQuizzes') {
+      setIsMyQuizzesOpen(true);
+    } else if (option === 'editProfile') {
+      setIsEditProfileOpen(true);
     }
   };
+
+  const handleCloseMyQuizzes = () => {
+    setIsMyQuizzesOpen(false);
+  };
+
+  const handleCloseEditProfile = () => {
+    setIsEditProfileOpen(false);
+  };
+
+  const getAvatar = () => {
+    if (user?.profile_picture && avatarImages[user.profile_picture]) {
+      return avatarImages[user.profile_picture];
+    }
+    return "/assets/images/avatar1.png";
+  }
 
   return (
     <header className={styles.header}>
       <nav className={styles.navigation}>
-      <Button color="primary" className={styles.searchButton}>
-        <span>Keresés</span>
-        <RivetIconsMagnifyingGlass className={styles.icon} />
-      </Button>
-      <Button className={styles.createButton}>
-        <span>Létrehozás</span>
-        <TablerPlus className={styles.icon2} />
-      </Button>
+        <div className={styles.inputContainer}>
+          <input
+            key='default'
+            type="email"
+            placeholder="Keress kvíz kód vagy kategória alapján..."
+            className={styles.customInput}
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+          <RivetIconsMagnifyingGlass className={styles.icon} />
+        </div>
+        <Button className={styles.createButton}>
+          <span>Létrehozás</span>
+          <TablerPlus className={styles.icon2} />
+        </Button>
       </nav>
       <div className={styles.titleContainer}>
         <h1 className={styles.title}>Kvízoldal</h1>
       </div>
-      <Image
-        src = {require("@/app/assets/images/defaultAvatar.png").default}
-        alt="Quiz Page Logo"
-        className={styles.logo}
-        onClick={handleLogoClick}
-        style={{ cursor: 'pointer' }}
-      />
-
-      {/* Modal megjelenítése */}
-      {isModalOpen && (
-        <div className={styles.modalOverlay} onClick={handleCloseModal}>
-          <div
-            className={styles.modalContent}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h2>Kijelentkezés</h2>
-            <p>Biztosan ki szeretnél jelentkezni?</p>
-            <div className={styles.modalButtons}>
-              <button
-                className={styles.logoutButton}
-                onClick={handleLogout}
-                disabled={isLoggingOut}
-              >
-                {isLoggingOut ? 'Kijelentkezés...' : 'Kijelentkezés'}
-              </button>
-              <button className={styles.cancelButton} onClick={handleCloseModal}>
-                Mégsem
-              </button>
-            </div>
-          </div>
+      {user && (
+        <div className={styles.avatarContainer}>
+          <Image
+            src={getAvatar()}
+            alt="User Avatar"
+            onClick={handleAvatarClick}
+            style={{ cursor: 'pointer', borderRadius: '50%', border: '0.15rem solid #000', marginRight: '0.5rem' }}
+            height={65}
+            width={65}
+          />
         </div>
       )}
+
+      {/* Profile Options Modal */}
+      <ProfileOptionsModal
+        isOpen={isProfileOptionsOpen}
+        onClose={handleCloseProfileOptions}
+        onSelectOption={handleSelectOption}
+      />
+
+      {/* My Quizzes Modal */}
+      <MyQuizzesModal
+        isOpen={isMyQuizzesOpen}
+        onClose={handleCloseMyQuizzes}
+      />
+
+      {/* Edit Profile Modal */}
+      <EditProfileModal
+        isOpen={isEditProfileOpen}
+        onClose={handleCloseEditProfile}
+      />
     </header>
   );
 };
