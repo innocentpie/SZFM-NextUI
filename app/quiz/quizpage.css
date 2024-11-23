@@ -1,0 +1,94 @@
+:root {
+  --default-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Ubuntu, "Helvetica Neue", Helvetica, Arial, "PingFang SC",
+    "Hiragino Sans GB", "Microsoft Yahei UI", "Microsoft Yahei",
+    "Source Han Sans CN", sans-serif;
+}
+
+.main-container {
+  background-color: rgba(255, 255, 255, 0.3);;
+  width: 68rem;
+  height: 100vh;
+  margin: auto;
+  overflow-y: auto;
+  scrollbar-width: thin;
+}
+
+.secondary-container{
+  margin: auto;
+  margin-top: 16px;
+  padding: 3.5rem 0 0 1rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  width: 66rem;
+  height: auto;
+}
+
+.quiz-card{
+  height: 18.5rem;
+}
+
+.quiz-description {
+  word-wrap: break-word;
+  word-break: break-all;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-color: #ffffff #a8a2a2;
+  scrollbar-width: thin;
+  height: 9rem;
+}
+
+.difficulty-chip-div {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.icon {
+  width: 2rem;
+  height: 2rem;
+}
+
+@media (max-width: 1050px) {
+  .main-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 42.5rem;
+    margin: auto;
+  }
+  
+  .quiz-card{
+    width: 61%;
+  }
+
+  .secondary-container{
+    padding: 0 0 0 1rem;
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+  }
+}
+
+@media (min-width: 2000px) {
+  .main-container {
+    overflow-y: auto;
+    overflow-x: hidden;
+    width: 75%;
+    margin: auto;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+  }
+
+  .secondary-container{
+    padding: 4rem 0 0 1rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    width: 100%;
+    scrollbar-width: thin;
+  }
+}
+
+.quiz-card-footer {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
