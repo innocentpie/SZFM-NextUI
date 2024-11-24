@@ -3,7 +3,8 @@
 		"_postman_id": "6b62a14b-ba4a-4ec8-b049-a4054bfcd17f",
 		"name": "Kvíz_Users_tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "39957263"
+		"_exporter_id": "39957263",
+		"_collection_link": "https://szfm-kvzoldal-project.postman.co/workspace/e7ac2511-75ef-4e7e-882a-829146daef98/collection/39957263-6b62a14b-ba4a-4ec8-b049-a4054bfcd17f?action=share&source=collection_link&creator=39957263"
 	},
 	"item": [
 		{
@@ -41,46 +42,6 @@
 						"users",
 						"records",
 						""
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Pulls specific id users data",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.test('lists all user info',function(){\r",
-							"    pm.response.to.have.status(200)\r",
-							"})"
-						],
-						"type": "text/javascript",
-						"packages": {}
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "http://127.0.0.1:8090/api/collections/users/records/opkvctt6ap147l2",
-					"protocol": "http",
-					"host": [
-						"127",
-						"0",
-						"0",
-						"1"
-					],
-					"port": "8090",
-					"path": [
-						"api",
-						"collections",
-						"users",
-						"records",
-						"opkvctt6ap147l2"
 					]
 				}
 			},
@@ -363,6 +324,46 @@
 						"collections",
 						"users",
 						"records"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Pulls specific id users data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('lists all user info',function(){\r",
+							"    pm.response.to.have.status(200)\r",
+							"})"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8090/api/collections/users/records/{{id}}",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8090",
+					"path": [
+						"api",
+						"collections",
+						"users",
+						"records",
+						"{{id}}"
 					]
 				}
 			},
