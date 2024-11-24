@@ -9,6 +9,7 @@ import pb from '../authentication/PocketBaseClient';
 import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Divider } from "@nextui-org/react";
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
+import { categories } from './categories';
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
 
@@ -72,24 +73,24 @@ export default function QuizPage() {
   //technikailag nem lehetséges mert azonnal visszairányítja a login oldalra
   if (!user) return;
 
-  const categories = [
-    { label: 'matematika', icon: <icons.MynauiMathSolidWhite /> },
-    { label: 'tudomány', icon: <icons.MdiFlaskWhite /> },
-    { label: 'művészet', icon: <icons.MdiArtWhite /> },
-    { label: 'sport', icon: <icons.FluentSport16RegularWhite /> },
-    { label: 'technológia', icon: <icons.GridiconsPhoneWhite /> },
-    { label: 'utazás', icon: <icons.FaPlaneWhite /> },
-    { label: 'videók', icon: <icons.RiMovieLineWhite /> },
-    { label: 'film', icon: <icons.BxCameraMovieWhite /> },
-    { label: 'zene', icon: <icons.MdiMusicWhite /> },
-    { label: 'könyvek', icon: <icons.MaterialSymbolsBookOutlineWhite /> },
-    { label: 'játékok', icon: <icons.IonGameControllerOutlineWhite /> },
-    { label: 'egyéb', icon: <icons.BasilOther1OutlineWhite /> },
-  ];
+  // const categories = [
+  //   { label: 'matematika', icon: <icons.MynauiMathSolidWhite /> },
+  //   { label: 'tudomány', icon: <icons.MdiFlaskWhite /> },
+  //   { label: 'művészet', icon: <icons.MdiArtWhite /> },
+  //   { label: 'sport', icon: <icons.FluentSport16RegularWhite /> },
+  //   { label: 'technológia', icon: <icons.GridiconsPhoneWhite /> },
+  //   { label: 'utazás', icon: <icons.FaPlaneWhite /> },
+  //   { label: 'videók', icon: <icons.RiMovieLineWhite /> },
+  //   { label: 'film', icon: <icons.BxCameraMovieWhite /> },
+  //   { label: 'zene', icon: <icons.MdiMusicWhite /> },
+  //   { label: 'könyvek', icon: <icons.MaterialSymbolsBookOutlineWhite /> },
+  //   { label: 'játékok', icon: <icons.IonGameControllerOutlineWhite /> },
+  //   { label: 'egyéb', icon: <icons.BasilOther1OutlineWhite /> },
+  // ];
 
   return (
     <>
-      <Header />
+      <Header quizMainHeaderMode={true}/>
       <div className='main-container'>
         <div className='secondary-container'>
           {quizzes.map((quiz) => (

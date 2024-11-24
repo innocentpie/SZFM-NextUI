@@ -12,7 +12,7 @@ import CreateQuizModal from '../Modals/CreateQuizModal';
 import avatarImages from '../assets/avatarImages';
 import { useRouter } from 'next/navigation';
 
-const Header: React.FC = () => {
+export default function Header({ quizMainHeaderMode }: { quizMainHeaderMode: boolean }) {
   const [isProfileOptionsOpen, setIsProfileOptionsOpen] = useState(false);
   const [isMyQuizzesOpen, setIsMyQuizzesOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -21,17 +21,19 @@ const Header: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (searchTerm) {
-        router.push(`?search=${encodeURIComponent(searchTerm)}`);
-      } else {
-        router.push(`/quiz`);
-      }
-    }, 500);
+  if(quizMainHeaderMode) {
+    useEffect(() => {
+      const timeoutId = setTimeout(() => {
+        if (searchTerm) {
+          router.push(`?search=${encodeURIComponent(searchTerm)}`);
+        } else {
+          router.push(`/quiz`);
+        }
+      }, 500);
 
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm, router]);
+      return () => clearTimeout(timeoutId);
+    }, [searchTerm, router]);
+  }
 
   const handleAvatarClick = () => {
     setIsProfileOptionsOpen(true);
@@ -134,5 +136,3 @@ const Header: React.FC = () => {
     </header>
   );
 };
-
-export default Header;
