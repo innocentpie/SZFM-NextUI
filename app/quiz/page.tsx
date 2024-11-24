@@ -116,7 +116,10 @@ export default function QuizPage() {
               <CardBody className="overflow-visible p-0">
                 <div className='m-2 quiz-description'>
                   <p className='text-small font-bold'>Készítő: {quiz.expand ? quiz.expand.creator.username : 'default'}</p>
-                  <p className='text-small font-bold'>Kérdések: {quiz.number_of_questions}</p>
+                  <div className='flex flex-row justify-between'>
+                    <h3 className='text-small font-bold'>Kérdések száma: {quiz.number_of_questions}</h3>
+                    <p className='text-small font-bold' style={{marginRight: '0.5rem'}}>Kvíz kód: {quiz.quiz_code}</p>
+                  </div>
                   <Divider className="my-4" style={{ background: getBackgroundColor(quiz.difficulty), height: '0.2rem' }} />
                   <p className="text-small mt-1">{quiz.quiz_description}</p>
                 </div>

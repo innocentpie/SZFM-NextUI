@@ -14,8 +14,8 @@ interface ProfileOptionsModalProps {
 
 const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({ isOpen, onClose, onSelectOption }) => {
   const { user } = useAuth();
-
   const { logout } = useAuth();
+  
   const handleMyQuizzes = () => {
     onSelectOption('myQuizzes');
     onClose();

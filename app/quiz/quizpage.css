@@ -34,7 +34,7 @@
   overflow-y: auto;
   scrollbar-color: #ffffff #a8a2a2;
   scrollbar-width: thin;
-  height: 9rem;
+  height: 10rem;
 }
 
 .difficulty-chip-div {
@@ -56,7 +56,7 @@
   }
 
   .secondary-container{
-    padding: 0 0 0 1rem;
+    padding: 4rem 0 0 1rem;
     display: grid;
     grid-template-columns: repeat(1, 1fr);
   }

@@ -27,7 +27,6 @@ interface CreateQuizModalProps {
 
 const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) => {
   const { user } = useAuth();
-
   const [quizDescription, setQuizDescription] = useState('');
   const [category, setCategory] = useState<{ label: string; icon: JSX.Element } | null>(null);
   const [difficulty, setDifficulty] = useState<{ label: string; icon: JSX.Element } | null>(null);
@@ -122,8 +121,17 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
       }
 
       const answersArray = q.answers.split(',').map(ans => ans.trim());
+      if (answersArray.length < 1 || answersArray.length > 4) {
+        alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
+        return;
+      }
       if (!answersArray.includes(q.correct_answer.trim())) {
         alert(`A(z) ${i + 1}. kérdéshez megadott helyes válasz nem szerepel a válaszok között.`);
+        return;
+      }
+      const correctAnswersCount = answersArray.filter(ans => ans === q.correct_answer.trim()).length;
+      if (correctAnswersCount !== 1) {
+        alert(`A(z) ${i + 1}. kérdéshez pontosan egy helyes választ kell megadni.`);
         return;
       }
     }
@@ -142,11 +150,9 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
         difficulty: difficulty?.label || '',
         questions: JSON.stringify(combinedQuestions.map(q => q.question_text)),
         answers: JSON.stringify(combinedQuestions.map(q => q.answers.split(',').map(ans => ans.trim()))),
-        correct_answers: JSON.stringify(combinedQuestions.map(q => [q.correct_answer.trim()])),
+        correct_answers: JSON.stringify(combinedQuestions.map(q => q.correct_answer.trim())),
         creator: user?.id || '',
       };
-
-      console.log('Quiz data:', quizData);
 
       const createdQuiz = await pb.collection('quizzes').create(quizData);
 
@@ -180,7 +186,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
         <ModalHeader>Létrehozás</ModalHeader>
         <ModalBody className={styles.modalBody}>
           <div className={styles.formGroup}>
-            <label htmlFor="quiz-description">Kvíz leírása(10-400 karakter):</label>
+            <label htmlFor="quiz-description">Kvíz leírása (min. 10, max. 400 karakter):</label>
             <Textarea
               id="quiz-description"
               placeholder="Írj egy leírást a kvízedhez..."
@@ -188,6 +194,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
               onChange={(e) => setQuizDescription(e.target.value)}
               required
               className={styles.textarea}
+              aria-label="Kvíz leírása"
             />
           </div>
           <div className={styles.formGroup}>
@@ -202,6 +209,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
               }}
               required
               className={styles.select}
+              aria-label="Kategória kiválasztása"
               renderValue={() =>
                 category && (
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -212,7 +220,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
               }
             >
               {categories.map((cat) => (
-                <SelectItem key={cat.label} value={cat.label}>
+                <SelectItem key={cat.label} value={cat.label} textValue={cat.label}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {cat.icon}
                     {cat.label}
@@ -222,10 +230,9 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
             </Select>
           </div>
           <div className={styles.formGroup}>
-            <label htmlFor="difficulty">Nehézség:</label>
+            <label>Nehézség:</label>
             <Select
-              id="difficulty"
-              placeholder="Válaszd ki a nehézséget"
+              placeholder="Válassz nehézséget"
               value={difficulty?.label || ''}
               onChange={(e) => {
                 const selectedDifficulty = difficulties.find(diff => diff.label === e.target.value);
@@ -233,6 +240,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
               }}
               required
               className={styles.select}
+              aria-label="Nehézség kiválasztása"
               renderValue={() =>
                 difficulty && (
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -243,7 +251,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
               }
             >
               {difficulties.map((diff) => (
-                <SelectItem key={diff.label} value={diff.label}>
+                <SelectItem key={diff.label} value={diff.label} textValue={diff.label}>
                   <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                     {diff.icon}
                     {diff.label}
@@ -265,21 +273,23 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
                     onChange={(e) => updateQuestion(index, 'question', e.target.value)}
                     required
                     className={styles.input}
+                    aria-label={`Kérdés ${index + 1}`}
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor={`answers-${index}`}>Válaszok (vesszővel elválasztva):</label>
+                  <label htmlFor={`answers-${index}`}>Válaszok (vesszővel elválasztva, maximum 4):</label>
                   <Input
                     id={`answers-${index}`}
-                    placeholder="Válasz1, Válasz2, Válasz3..."
+                    placeholder="Válasz1, Válasz2, Válasz3, Válasz4"
                     value={answers[index]}
                     onChange={(e) => updateQuestion(index, 'answers', e.target.value)}
                     required
                     className={styles.input}
+                    aria-label={`Válaszok a ${index + 1}. kérdéshez`}
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor={`correct-answer-${index}`}>Helyes válasz:</label>
+                  <label htmlFor={`correct-answer-${index}`}>Helyes válasz(maximum 1):</label>
                   <Input
                     id={`correct-answer-${index}`}
                     placeholder="Írd be a helyes választ..."
@@ -287,6 +297,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
                     onChange={(e) => updateQuestion(index, 'correctAnswer', e.target.value)}
                     required
                     className={styles.input}
+                    aria-label={`Helyes válasz a ${index + 1}. kérdéshez`}
                   />
                 </div>
                 {questions.length > 1 && (
@@ -295,6 +306,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
                     size="sm"
                     onClick={() => removeQuestion(index)}
                     className={styles.removeButton}
+                    aria-label={`Kérdés ${index + 1} törlése`}
                   >
                     Törlés
                   </Button>
@@ -307,6 +319,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
               onClick={addQuestion}
               className={styles.addButton}
               startContent={<MdiPlus />}
+              aria-label="Több kérdés hozzáadása"
             >
               Több kérdés hozzáadása
             </Button>
@@ -317,6 +330,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
             color="success"
             onPress={handleSubmit}
             disabled={isSubmitting}
+            aria-label="Kvíz létrehozása"
           >
             {isSubmitting ? 'Küldés...' : 'Létrehozás'}
           </Button>
@@ -325,6 +339,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
             variant="light"
             onPress={onClose}
             disabled={isSubmitting}
+            aria-label="Mégsem"
           >
             Mégsem
           </Button>

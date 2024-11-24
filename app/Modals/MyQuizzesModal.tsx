@@ -1,10 +1,24 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Textarea, Select, SelectItem, Divider } from "@nextui-org/react";
+import {
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Textarea,
+  Select,
+  SelectItem,
+  Divider,
+  Input,
+} from '@nextui-org/react';
 import { useAuth } from '../authentication/AuthContext';
 import pb from '../authentication/PocketBaseClient';
 import * as icons from '../assets/SvgIcons';
+import styles from './CreateQuizModal.module.css';
+import { MdiPlus } from '../assets/SvgIcons';
 
 interface Quiz {
   id: string;
@@ -34,6 +48,10 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
   const [quizDescription, setQuizDescription] = useState('');
   const [category, setCategory] = useState<{ label: string; icon: JSX.Element } | null>(null);
   const [difficulty, setDifficulty] = useState<{ label: string; icon: JSX.Element } | null>(null);
+  const [questions, setQuestions] = useState<string[]>([]);
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [correctAnswers, setCorrectAnswers] = useState<string[]>([]);
+  const [hasModified, setHasModified] = useState<boolean>(false);
 
   const categories = [
     { label: 'matematika', icon: <icons.MynauiMathSolid /> },
@@ -61,21 +79,15 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       if (!user) return;
       setLoading(true);
       try {
-        let response;
-        if (user.role) {
-          response = await pb.collection('quizzes').getFullList<Quiz>({
-            sort: '-created',
-          });
-        }
-        else {
-          response = await pb.collection('quizzes').getFullList<Quiz>({
+        const quizzesResponse = user.role
+          ? await pb.collection('quizzes').getFullList<Quiz>({ sort: '-created', expand: 'creator' })
+          : await pb.collection('quizzes').getFullList<Quiz>({
             filter: `creator="${user.id}"`,
             sort: '-created',
           });
-        }
-        setQuizzes(response);
+        setQuizzes(quizzesResponse);
       } catch (error) {
-        console.error('Quizzes fetch error:', error);
+        console.error('Fetch error:', error);
       } finally {
         setLoading(false);
       }
@@ -93,6 +105,9 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     const matchedDifficulty = difficulties.find((diff) => diff.label === quiz.difficulty);
     setCategory(matchedCategory || null);
     setDifficulty(matchedDifficulty || null);
+    setQuestions(JSON.parse(quiz.questions));
+    setAnswers(JSON.parse(quiz.answers).map((ansArray: string[]) => ansArray.join(', ')));
+    setCorrectAnswers(JSON.parse(quiz.correct_answers));
   };
 
   const handleEditSubmit = async () => {
@@ -101,11 +116,32 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       return;
     }
 
+    for (let i = 0; i < questions.length; i++) {
+      const answerArray = answers[i].split(',').map(ans => ans.trim());
+      if (answerArray.length < 1 || answerArray.length > 4) {
+        alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
+        return;
+      }
+      if (!answerArray.includes(correctAnswers[i].trim())) {
+        alert(`A(z) ${i + 1}. kérdéshez megadott helyes válasz nem szerepel a válaszok között.`);
+        return;
+      }
+      const correctAnswersCount = answerArray.filter(ans => ans === correctAnswers[i].trim()).length;
+      if (correctAnswersCount !== 1) {
+        alert(`A(z) ${i + 1}. kérdéshez pontosan egy helyes választ kell megadni.`);
+        return;
+      }
+    }
+
     const updatedQuiz = {
       ...editingQuiz,
       quiz_description: quizDescription,
+      number_of_questions: questions.length,
       category: category.label,
       difficulty: difficulty.label,
+      questions: JSON.stringify(questions),
+      answers: JSON.stringify(answers.map((ans) => ans.split(',').map((a) => a.trim()))),
+      correct_answers: JSON.stringify(correctAnswers.map(q => q.trim())),
     };
 
     try {
@@ -113,6 +149,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       setQuizzes((prevQuizzes) =>
         prevQuizzes.map((quiz) => (quiz.id === editingQuiz.id ? updatedQuiz : quiz))
       );
+      setHasModified(true);
       setEditingQuiz(null);
       alert('Kvíz sikeresen frissítve!');
     } catch (error) {
@@ -121,11 +158,41 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const addQuestion = () => {
+    setQuestions([...questions, '']);
+    setAnswers([...answers, '']);
+    setCorrectAnswers([...correctAnswers, '']);
+  };
+
+  const removeQuestion = (index: number) => {
+    const newQuestions = [...questions];
+    const newAnswers = [...answers];
+    const newCorrectAnswers = [...correctAnswers];
+
+    newQuestions.splice(index, 1);
+    newAnswers.splice(index, 1);
+    newCorrectAnswers.splice(index, 1);
+
+    setQuestions(newQuestions);
+    setAnswers(newAnswers);
+    setCorrectAnswers(newCorrectAnswers);
+  };
+
+  const renderCreator = (quiz: any) => {
+    if (user?.role)
+      return (
+        <div>
+          <strong>Létrehozó:</strong> {quiz.expand?.creator?.username || 'Ismeretlen'}
+        </div>
+      );
+  };
+
   const handleDelete = async (quizId: string) => {
     try {
       const leaderboard = await pb.collection('leaderboards').getFirstListItem(`quiz_id="${quizId}"`);
       await pb.collection('leaderboards').delete(leaderboard.id);
       await pb.collection('quizzes').delete(quizId);
+      setHasModified(true);
       setQuizzes(quizzes.filter((quiz) => quiz.id !== quizId));
       alert('Kvíz sikeresen törölve!');
     } catch (error) {
@@ -134,22 +201,29 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     }
   };
 
+  const handleModalClose = () => {
+    if (hasModified) {
+      window.location.reload();
+    }
+    onClose();
+  };
+
   return (
     <>
       {editingQuiz && (
-        <Modal isOpen={!!editingQuiz} onClose={() => setEditingQuiz(null)}>
-          <ModalContent>
+        <Modal isOpen={!!editingQuiz} onClose={() => setEditingQuiz(null)} closeButton backdrop="blur" className={styles.modalWindow}>
+          <ModalContent className={styles.modalContent}>
             <ModalHeader>Kvíz szerkesztése</ModalHeader>
-            <ModalBody>
-              <div>
-                <label>Kvíz leírása:</label>
+            <ModalBody className={styles.modalBody}>
+              <div className={styles.formGroup}>
+                <label>Kvíz leírása (min. 10, max. 400 karakter):</label>
                 <Textarea
                   value={quizDescription}
                   onChange={(e) => setQuizDescription(e.target.value)}
                   required
                 />
               </div>
-              <div>
+              <div className={styles.formGroup}>
                 <label>Kategória:</label>
                 <Select
                   placeholder="Válassz kategóriát"
@@ -158,6 +232,8 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
                     const selectedCategory = categories.find((cat) => cat.label === e.target.value);
                     setCategory(selectedCategory || null);
                   }}
+                  className={styles.select}
+                  aria-label="Kategória kiválasztása"
                   renderValue={() =>
                     category && (
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -168,7 +244,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
                   }
                 >
                   {categories.map((cat) => (
-                    <SelectItem key={cat.label} value={cat.label}>
+                    <SelectItem key={cat.label} value={cat.label} aria-label={`Kategória: ${cat.label}`}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {cat.icon}
                         {cat.label}
@@ -177,7 +253,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
                   ))}
                 </Select>
               </div>
-              <div>
+              <div className={styles.formGroup}>
                 <label>Nehézség:</label>
                 <Select
                   placeholder="Válassz nehézséget"
@@ -186,6 +262,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
                     const selectedDifficulty = difficulties.find((diff) => diff.label === e.target.value);
                     setDifficulty(selectedDifficulty || null);
                   }}
+                  aria-label="Nehézség kiválasztása"
                   renderValue={() =>
                     difficulty && (
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -205,6 +282,75 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
                   ))}
                 </Select>
               </div>
+              <div className={styles.questionsSection}>
+                <h3>Kérdések:</h3>
+                {questions.map((question, index) => (
+                  <div key={index} className={styles.questionGroup}>
+                    <div>
+                      <label>Kérdés {index + 1}:</label>
+                      <Input
+                        placeholder="Írd be a kérdést..."
+                        value={questions[index]}
+                        onChange={(e) =>
+                          setQuestions((prev) => {
+                            const updated = [...prev];
+                            updated[index] = e.target.value;
+                            return updated;
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label>Válaszok (vesszővel elválasztva, maximum 4):</label>
+                      <Input
+                        placeholder="Válasz1, Válasz2, Válasz3, Válasz4"
+                        value={answers[index]}
+                        onChange={(e) =>
+                          setAnswers((prev) => {
+                            const updated = [...prev];
+                            updated[index] = e.target.value;
+                            return updated;
+                          })
+                        }
+                      />
+                    </div>
+                    <div>
+                      <label>Helyes válasz (maximum 1):</label>
+                      <Input
+                        placeholder="Írd be a helyes választ..."
+                        value={correctAnswers[index]}
+                        onChange={(e) =>
+                          setCorrectAnswers((prev) => {
+                            const updated = [...prev];
+                            updated[index] = e.target.value;
+                            return updated;
+                          })
+                        }
+                      />
+                    </div>
+                    {questions.length > 1 && (
+                      <Button
+                        color="danger"
+                        size="sm"
+                        onClick={() => removeQuestion(index)}
+                        className={styles.removeButton}
+                      >
+                        Törlés
+                      </Button>
+                    )}
+                    <Divider className={styles.questionDivider} />
+                  </div>
+                ))}
+                <Button
+                  color="primary"
+                  onClick={addQuestion}
+                  className={styles.addButton}
+                  startContent={<MdiPlus />}
+                  aria-label="Több kérdés hozzáadása"
+                >
+                  Több kérdés hozzáadása
+                </Button>
+              </div>
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onPress={handleEditSubmit}>
@@ -217,7 +363,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
           </ModalContent>
         </Modal>
       )}
-      <Modal isOpen={isOpen} onClose={onClose} style={{marginTop: '14rem'}}>
+      <Modal isOpen={isOpen} onClose={handleModalClose} closeButton style={{ top: '1.5rem', position: 'absolute' }}>
         <ModalContent>
           <ModalHeader>Kvízek</ModalHeader>
           <ModalBody>
@@ -228,39 +374,31 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
             ) : (
               <ul>
                 {quizzes.map((quiz) => (
-                  <div key={quiz.id}>
-                    <li key={quiz.id} style={{ display: 'flex', justifyContent: 'space-between', flexDirection: 'column',marginBottom: '0.75rem', marginTop: '0.75rem' }}>
-                      <div>
-                        <strong>ID:</strong> {quiz.id}
-                      </div>
-                      <div>
-                        <strong>Kategória:</strong> {quiz.category}
-                      </div>
-                      <div>
-                        <strong>Nehézség:</strong> {quiz.difficulty}
-                      </div>
-                      <div>
-                        <Button
-                          size="sm"
-                          color="primary"
-                          onPress={() => handleEditQuiz(quiz)}
-                          style={{ marginRight: '5px' }}
-                        >
-                          Szerkeszt
-                        </Button>
-                        <Button size="sm" color="danger" onPress={() => handleDelete(quiz.id)}>
-                          Törlés
-                        </Button>
-                      </div>
-                    </li>
+                  <li key={quiz.id}>
+                    <div>
+                      <strong>Kvíz megosztó kód:</strong> {quiz.quiz_code}
+                    </div>
+                    <div>
+                      <strong>Kategória:</strong> {quiz.category}
+                    </div>
+                    <div>
+                      <strong>Nehézség:</strong> {quiz.difficulty}
+                    </div>
+                    {renderCreator(quiz)}
+                    <Button size="sm" color="primary" onPress={() => handleEditQuiz(quiz)} style={{ marginRight: '1rem' }}>
+                      Szerkeszt
+                    </Button>
+                    <Button size="sm" color="danger" onPress={() => handleDelete(quiz.id)}>
+                      Törlés
+                    </Button>
                     <Divider className="my-4" style={{ background: 'red', height: '0.2rem' }} />
-                  </div>
+                  </li>
                 ))}
               </ul>
             )}
           </ModalBody>
           <ModalFooter>
-            <Button color="danger" variant="light" onPress={onClose}>
+            <Button color="danger" variant="light" onPress={handleModalClose}>
               Bezárás
             </Button>
           </ModalFooter>

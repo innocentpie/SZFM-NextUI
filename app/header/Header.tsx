@@ -82,7 +82,7 @@ export default function Header({ quizMainHeaderMode }: { quizMainHeaderMode: boo
           <div className={styles.inputContainer}>
             <input
               key='default'
-              type="email"
+              type="text"
               placeholder="Keress kvíz kód vagy kategória alapján..."
               className={styles.customInput}
               value={searchTerm}
