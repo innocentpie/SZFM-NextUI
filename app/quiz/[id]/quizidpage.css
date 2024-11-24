@@ -18,12 +18,19 @@
 }
 
 .main-card {
-    height: 100%;
+    padding: 20px;
 }
 
 .clock-card {
-    height: 40%;
+    height: auto;
     margin-left: 1rem;
+}
+
+.clock-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
 }
 
 .center-col {
@@ -34,4 +41,27 @@
 .side-col {
     width: 20%;
     height: 100%;
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: start;
+    gap: 30px;
+    height: 100%;
+}
+
+.answers-div {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    width: 100%;
+    gap: 40px;
+    flex-wrap: wrap;
+}
+
+.answer-button {
+    width: 40%;
+    height: 6rem;
 }

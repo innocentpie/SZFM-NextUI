@@ -10,6 +10,8 @@ import headerStyles from '@app/header/Header.module.css';
 import Header from '@/app/header/Header';
 import { Card, CardBody } from '@nextui-org/card';
 import './quizidpage.css';
+import { Button } from '@nextui-org/button';
+import { CircularProgress } from '@nextui-org/react';
 
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
@@ -36,6 +38,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
       let id = (params).id;
       let quiz = await getQuiz(id);
       setQuiz(quiz);
+      console.log(quiz);
     }
     catch (error) {
       console.error('Quiz fetch hiba:', error);
@@ -55,6 +58,10 @@ export default function QuizPage({ params }: { params: {id: string }} ){
 
   if (quiz == null || quiz == undefined) return (<><div><h1><p>A kvíz ({id}) nem elérhető vagy nem létezik...</p></h1></div></>);
 
+  const questions = JSON.parse(quiz.questions);
+  const answers = JSON.parse(quiz.answers);
+  const correct_answers = JSON.parse(quiz.correct_answers);
+
   return(
     <>
     <Header quizMainHeaderMode={false}/>
@@ -65,14 +72,39 @@ export default function QuizPage({ params }: { params: {id: string }} ){
         <div className='center-col'>
           <Card className='main-card'>
             <CardBody>
-
+              <div className='card-body'>
+                <p className='text-xl font-bold text-center'>{questions[0]}</p>
+                <div className='answers-div'>
+                  {answers[0].map((ans : string) => (
+                    <Button className='answer-button'>
+                      <span className='text-xl text-center'>{ans}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
             </CardBody>
           </Card>
         </div>
         <div className='side-col'>
           <Card className='clock-card'>
             <CardBody>
-
+              <div className='clock-body'>
+                <p className='text-xl text-center'>Kérdésre hátralévő idő</p>
+                <div>
+                  <CircularProgress
+                    aria-label="Loading..."
+                    classNames={{
+                      svg: "w-24 h-24",
+                      label: "text-xl"
+                    }}
+                    value={40}
+                    strokeWidth={4}
+                    color="warning"
+                    showValueLabel={false}
+                    label="0:12"
+                  />
+                </div>
+              </div>
             </CardBody>
           </Card>
         </div>

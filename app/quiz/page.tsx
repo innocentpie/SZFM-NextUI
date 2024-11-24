@@ -6,6 +6,7 @@ import './quizpage.css';
 import Header from "../header/Header";
 import pb from '../authentication/PocketBaseClient';
 import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Divider } from "@nextui-org/react";
+import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { categories } from './categories';
 
@@ -129,9 +130,11 @@ function QuizContent({ user, loadQuizzes, quizzes, quizLoading, getBackgroundCol
           </CardBody>
           <CardFooter className='quiz-card-footer'>
             <div>
-              <Button className='mr-1' isDisabled color='primary' as="a">
-                <span>Kitöltés (wip)</span>
-              </Button>
+              <Link href={`/quiz/${quiz.id}`} passHref>
+                <Button className='mr-1' color='primary' as="a">
+                  <span>Kitöltés (wip)</span>
+                </Button>
+              </Link>
             </div>
             <div>
               <Button className='ml-1' isDisabled color='secondary'>
