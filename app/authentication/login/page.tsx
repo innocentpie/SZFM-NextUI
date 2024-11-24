@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { useAuth } from '../AuthContext';
-import styles from '../KvizoldalLogin.module.css';
+import styles from './KvizoldalLogin.module.css';
 
 import { Input } from "@nextui-org/input";
 import { Button } from '@nextui-org/button';

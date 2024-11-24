@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import pb from '../PocketBaseClient';
-import styles from '../KvizoldalLogin.module.css';
+import styles from './KvizoldalRegister.module.css';
 import { useAuth } from '../AuthContext';
 import { Input } from "@nextui-org/input";
 import { Button } from '@nextui-org/button';
