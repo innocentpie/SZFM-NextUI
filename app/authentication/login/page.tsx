@@ -6,7 +6,6 @@ import styles from '../KvizoldalLogin.module.css';
 
 import { Input } from "@nextui-org/input";
 import { Button } from '@nextui-org/button';
-import Image from 'next/image'
 import {EyeFilledIcon} from "@/components/EyeFilledIcon";
 import {EyeSlashFilledIcon} from "@/components/EyeSlashFilledIcon";
 
