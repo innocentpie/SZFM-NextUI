@@ -123,15 +123,15 @@ export default function QuizPage() {
               </CardBody>
               <CardFooter className='quiz-card-footer'>
                 <div>
-                  <Link href={`/quiz/${quiz.id}`} passHref>
-                    <Button className='mr-1' color='primary' as="a">
-                      <span>Kitöltés</span>
+                  {/* <Link href={`/quiz/${quiz.id}`} passHref> */}
+                    <Button className='mr-1' isDisabled color='primary' as="a">
+                      <span>Kitöltés (wip)</span>
                     </Button>
-                  </Link>
+                  {/* </Link> */}
                 </div>
                 <div>
-                  <Button className='ml-1' color='secondary'>
-                    <span>Ranglista</span>
+                  <Button className='ml-1' isDisabled color='secondary'>
+                    <span>Ranglista (wip)</span>
                   </Button>
                 </div>
               </CardFooter>
