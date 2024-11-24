@@ -15,11 +15,11 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="hu">
       <body
         className={clsx(
-          "min-h-screen light bg-background font-sans antialiased",
+          "min-h-screen bg-background font-sans antialiased",
           fontSans.variable,
         )}
       >
-        <Providers themeProps={{ attribute: "class", defaultTheme: "light" }}>
+        <Providers themeProps={{ attribute: "class", defaultTheme: "light", forcedTheme: "light" }}>
           <AuthProvider>
             {children}
           </AuthProvider>
