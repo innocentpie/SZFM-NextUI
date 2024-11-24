@@ -21,19 +21,20 @@ export default function Header({ quizMainHeaderMode }: { quizMainHeaderMode: boo
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
 
-  if(quizMainHeaderMode) {
-    useEffect(() => {
-      const timeoutId = setTimeout(() => {
-        if (searchTerm) {
-          router.push(`?search=${encodeURIComponent(searchTerm)}`);
-        } else {
-          router.push(`/quiz`);
-        }
-      }, 500);
+  useEffect(() => {
+    if(!quizMainHeaderMode)
+      return;
 
-      return () => clearTimeout(timeoutId);
-    }, [searchTerm, router]);
-  }
+    const timeoutId = setTimeout(() => {
+      if (searchTerm) {
+        router.push(`?search=${encodeURIComponent(searchTerm)}`);
+      } else {
+        router.push(`/quiz`);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchTerm, router]);
 
   const handleAvatarClick = () => {
     setIsProfileOptionsOpen(true);
@@ -77,21 +78,25 @@ export default function Header({ quizMainHeaderMode }: { quizMainHeaderMode: boo
   return (
     <header className={styles.header}>
       <nav className={styles.navigation}>
-        <div className={styles.inputContainer}>
-          <input
-            key='default'
-            type="email"
-            placeholder="Keress kvíz kód vagy kategória alapján..."
-            className={styles.customInput}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-          <RivetIconsMagnifyingGlass className={styles.icon} />
-        </div>
-        <Button className={styles.createButton} onClick={handleCreateClick}>
-          <span>Létrehozás</span>
-          <MdiPlus />
-        </Button>
+        {quizMainHeaderMode &&
+          <div className={styles.inputContainer}>
+            <input
+              key='default'
+              type="email"
+              placeholder="Keress kvíz kód vagy kategória alapján..."
+              className={styles.customInput}
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <RivetIconsMagnifyingGlass className={styles.icon} />
+          </div>
+        }
+        {quizMainHeaderMode &&
+          <Button className={styles.createButton} onClick={handleCreateClick}>
+            <span>Létrehozás</span>
+            <MdiPlus />
+          </Button>
+        }
       </nav>
       <div className={styles.titleContainer}>
         <h1 className={styles.title}>Kvízoldal</h1>
@@ -110,10 +115,12 @@ export default function Header({ quizMainHeaderMode }: { quizMainHeaderMode: boo
       )}
 
       {/* Create Quiz Modal */}
-      <CreateQuizModal
+      {quizMainHeaderMode &&
+        <CreateQuizModal
         isOpen={isCreateQuizOpen}
         onClose={handleCloseCreateQuiz}
-      />
+        />
+      }
 
       {/* Profile Options Modal */}
       <ProfileOptionsModal
