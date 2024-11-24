@@ -1,3 +1,4 @@
+## Irányított riport
 **Mi a célja a kvíz alkalmazásnak?**
 A cél, hogy a felhasználók egy szórakoztató, játékos platformon keresztül tanulhassanak, mérhessék tudásukat és versenyezhessenek egymással.
 
@@ -23,3 +24,4 @@ Az eredménytábla lehetővé teszi, hogy a felhasználók összehasonlítsák s
 
 **Lehetőséget biztosít az alkalmazás értékelésre?**
 Igen, a felhasználók visszajelzést és értékelést adhatnak az egyes kvízekhez, amely alapján a rendszer finomhangolható a felhasználói igények szerint.
+### [Back to README](/README.md)

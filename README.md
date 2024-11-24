@@ -7,15 +7,15 @@ elérhető az összes felhasználói funkció. A kvízek kategóriák szerint va
 
 
 ## Documentation
-- [User Story](/documentation/UserStory.txt)
-- [Jelenlegi helyzet](/documentation/JelenlegiHelyzet.txt)
-- [Vágyálom rendszer](/documentation/VagyalomRendszer.txt)
-- [Funkcionális követelmények](/documentation/FunkcionalisKovetelmenyek)
+- [User Story](/documentation/UserStory.md)
+- [Jelenlegi helyzet](/documentation/JelenlegiHelyzet.md)
+- [Vágyálom rendszer](/documentation/VagyalomRendszer.md)
+- [Funkcionális követelmények](/documentation/FunkcionalisKovetelmenyek.md)
 - [**Követelménylista FIXMElink**](https://docs.google.com/document/d/1HVqWFxbzCuthdtFXfPDTdrWRvUNI0WBZ4gA-M4g6DtM/edit?fbclid=IwY2xjawGwc45leHRuA2FlbQIxMAABHaHC_qAbnsifYzwqn7j_5N8knamT9Ncc00NDhUSFiygFbkGvX0muXltshQ_aem_rh4SNp0TCoiBWz4wgJJMyw&tab=t.0)
-- [Szabad riport](/documentation/SzabadRiport.txt)
+- [Szabad riport](/documentation/SzabadRiport.md)
 - [Irányított riport](/documentation/IrarnyitottRiport.md)
-- [Minutes of meetings](/documentation/MinutesOfMeetings.txt)
-- [Rendszerterv](/documentation/Rendszerterv.txt)
+- [Minutes of meetings](/documentation/MinutesOfMeetings.md)
+- [Rendszerterv](/documentation/Rendszerterv.md)
 
 ## Figma tervek
 ### Bejelentkező oldal:
