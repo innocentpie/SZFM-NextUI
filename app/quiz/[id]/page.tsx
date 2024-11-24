@@ -8,6 +8,8 @@ import pb from '@/app/authentication/PocketBaseClient';
 import { categories } from '../categories';
 import headerStyles from '@app/header/Header.module.css';
 import Header from '@/app/header/Header';
+import { Card, CardBody } from '@nextui-org/card';
+import './quizidpage.css';
 
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
@@ -51,11 +53,31 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   //ha tölt az oldal vagy a quizek akkor ezt írja ki
   if (loading || quizLoading) return (<><div><h1><p>Betöltés...</p></h1></div></>);
 
-  if (quiz == null || quiz == undefined) return (<><div><h1><p>A kvíz nem elérhető vagy nem létezik... ({id})</p></h1></div></>);
+  if (quiz == null || quiz == undefined) return (<><div><h1><p>A kvíz ({id}) nem elérhető vagy nem létezik...</p></h1></div></>);
 
   return(
     <>
-      <Header quizMainHeaderMode={false} />
+    <Header quizMainHeaderMode={false}/>
+    <div className='outer-content-div'>
+      <div className='content-div'>
+        <div className='side-col'>
+        </div>
+        <div className='center-col'>
+          <Card className='main-card'>
+            <CardBody>
+
+            </CardBody>
+          </Card>
+        </div>
+        <div className='side-col'>
+          <Card className='clock-card'>
+            <CardBody>
+
+            </CardBody>
+          </Card>
+        </div>
+      </div>
+    </div>
     </>
   )
 }
