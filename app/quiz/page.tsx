@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../authentication/AuthContext';
-import { MdiFlask } from '../assets/SvgIcons';
+import * as icons from '../assets/SvgIcons';
 import './quizpage.css';
 import Header from "../header/Header";
 import pb from '../authentication/PocketBaseClient';
@@ -52,37 +52,40 @@ export default function QuizPage() {
     }
   };
 
-  const getBackgroundColor = (difficulty: number) => {
+  const getBackgroundColor = (difficulty: string) => {
     switch (difficulty) {
-      case 1:
+      case "Könnyű":
         return '#00ff32'; // Zöld - könnyű
-      case 2:
+      case "Közepes":
         return '#FFC300'; // Sárga - közepes
-      case 3:
+      case "Nehéz":
         return '#FF1500'; // Piros - nehéz
       default:
         return '#8a8884'; // Alapértelmezett szürke
     }
   }
 
-  const getDifficultyText = (difficulty: number) => {
-    switch (difficulty) {
-      case 1:
-        return 'Könnyű'; // Zöld - könnyű
-      case 2:
-        return 'Közepes'; // Sárga - közepes
-      case 3:
-        return 'Nehéz'; // Piros - nehéz
-      default:
-        return '#D3D3D3'; // Alapértelmezett szürke
-    }
-  }
   //ha tölt az oldal vagy a quizek akkor ezt írja ki
   if (loading || quizLoading) return (<><div><h1><p>Betöltés...</p></h1></div></>);
 
   //ha nincs bejelentkezve és valahogy mégis eléri az oldalt akkor egyszerűen visszatér a program
   //technikailag nem lehetséges mert azonnal visszairányítja a login oldalra
   if (!user) return;
+
+  const categories = [
+    { label: 'matematika', icon: <icons.MynauiMathSolidWhite /> },
+    { label: 'tudomány', icon: <icons.MdiFlaskWhite /> },
+    { label: 'művészet', icon: <icons.MdiArtWhite /> },
+    { label: 'sport', icon: <icons.FluentSport16RegularWhite /> },
+    { label: 'technológia', icon: <icons.GridiconsPhoneWhite /> },
+    { label: 'utazás', icon: <icons.FaPlaneWhite /> },
+    { label: 'videók', icon: <icons.RiMovieLineWhite /> },
+    { label: 'film', icon: <icons.BxCameraMovieWhite /> },
+    { label: 'zene', icon: <icons.MdiMusicWhite /> },
+    { label: 'könyvek', icon: <icons.MaterialSymbolsBookOutlineWhite /> },
+    { label: 'játékok', icon: <icons.IonGameControllerOutlineWhite /> },
+    { label: 'egyéb', icon: <icons.BasilOther1OutlineWhite /> },
+  ];
 
   return (
     <>
@@ -97,10 +100,16 @@ export default function QuizPage() {
                   background: getBackgroundColor(quiz.difficulty),
                 }}>
                 <div>
-                  <MdiFlask className='icon' />
+                  {categories.map((cat) =>
+                    cat.label === quiz.category ? (
+                      <div key={cat.label} title={cat.label}>
+                        {cat.icon}
+                      </div>
+                    ) : null
+                  )}
                 </div>
                 <div>
-                  <Chip>{getDifficultyText(quiz.difficulty)}</Chip>
+                  <Chip>{quiz.difficulty}</Chip>
                 </div>
               </CardHeader>
               <CardBody className="overflow-visible p-0">

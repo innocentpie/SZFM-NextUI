@@ -1,13 +1,14 @@
 'use client';
 import React, { useState, useEffect } from 'react';
 import styles from './Header.module.css';
-import { RivetIconsMagnifyingGlass, TablerPlus } from '../assets/SvgIcons';
+import { RivetIconsMagnifyingGlass, MdiPlus } from '../assets/SvgIcons';
 import { useAuth } from '../authentication/AuthContext';
 import { Button } from '@nextui-org/button';
 import Image from 'next/image';
 import ProfileOptionsModal from '../Modals/ProfileOptionsModal';
 import MyQuizzesModal from '../Modals/MyQuizzesModal';
 import EditProfileModal from '../Modals/EditProfileModal';
+import CreateQuizModal from '../Modals/CreateQuizModal';
 import avatarImages from '../assets/avatarImages';
 import { useRouter } from 'next/navigation';
 
@@ -15,6 +16,7 @@ const Header: React.FC = () => {
   const [isProfileOptionsOpen, setIsProfileOptionsOpen] = useState(false);
   const [isMyQuizzesOpen, setIsMyQuizzesOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [isCreateQuizOpen, setIsCreateQuizOpen] = useState(false);
   const { user } = useAuth();
   const [searchTerm, setSearchTerm] = useState('');
   const router = useRouter();
@@ -33,6 +35,10 @@ const Header: React.FC = () => {
 
   const handleAvatarClick = () => {
     setIsProfileOptionsOpen(true);
+  };
+
+  const handleCreateClick = () => {
+    setIsCreateQuizOpen(true);
   };
 
   const handleCloseProfileOptions = () => {
@@ -55,6 +61,10 @@ const Header: React.FC = () => {
     setIsEditProfileOpen(false);
   };
 
+  const handleCloseCreateQuiz = () => {
+    setIsCreateQuizOpen(false);
+  }
+
   const getAvatar = () => {
     if (user?.profile_picture && avatarImages[user.profile_picture]) {
       return avatarImages[user.profile_picture];
@@ -76,9 +86,9 @@ const Header: React.FC = () => {
           />
           <RivetIconsMagnifyingGlass className={styles.icon} />
         </div>
-        <Button className={styles.createButton}>
+        <Button className={styles.createButton} onClick={handleCreateClick}>
           <span>Létrehozás</span>
-          <TablerPlus className={styles.icon2} />
+          <MdiPlus />
         </Button>
       </nav>
       <div className={styles.titleContainer}>
@@ -96,6 +106,12 @@ const Header: React.FC = () => {
           />
         </div>
       )}
+
+      {/* Create Quiz Modal */}
+      <CreateQuizModal
+        isOpen={isCreateQuizOpen}
+        onClose={handleCloseCreateQuiz}
+      />
 
       {/* Profile Options Modal */}
       <ProfileOptionsModal

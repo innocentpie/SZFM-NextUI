@@ -17,7 +17,6 @@ interface Quiz {
   questions: string;
   answers: string;
   correct_answers: string;
-  card_color: string;
   creator: string;
   created: string;
   updated: string;
