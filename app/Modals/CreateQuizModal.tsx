@@ -35,6 +35,15 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
   const [correctAnswer, setCorrectAnswer] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  const clearQuiz = () => {
+    setQuizDescription('');
+    setCategory(null);
+    setDifficulty(null);
+    setQuestions([]);
+    setAnswers([]);
+    setCorrectAnswer([]);
+  };
+
   const categories = [
     { label: 'matematika', icon: <icons.MynauiMathSolid /> },
     { label: 'tudomány', icon: <icons.MdiFlask /> },
@@ -165,12 +174,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
 
       alert('Kvíz sikeresen létrehozva!');
       window.location.reload();
-      setQuizDescription('');
-      setCategory(null);
-      setDifficulty(null);
-      setQuestions([]);
-      setAnswers([]);
-      setCorrectAnswer([]);
+      clearQuiz();
       onClose();
     } catch (error) {
       console.error('Kvíz létrehozási hiba:', error);
@@ -180,8 +184,13 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
     }
   };
 
+  const modalOnClose = () => {
+    clearQuiz();
+    onClose();
+  }
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} closeButton className={styles.modalWindow}>
+    <Modal isOpen={isOpen} onClose={modalOnClose} closeButton className={styles.modalWindow}>
       <ModalContent className={styles.modalContent}>
         <ModalHeader>Létrehozás</ModalHeader>
         <ModalBody className={styles.modalBody}>
@@ -337,7 +346,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
           <Button
             color="danger"
             variant="light"
-            onPress={onClose}
+            onPress={modalOnClose}
             disabled={isSubmitting}
             aria-label="Mégsem"
           >
