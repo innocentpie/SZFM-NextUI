@@ -37,7 +37,7 @@ elérhető az összes felhasználói funkció. A kvízek kategóriák szerint va
 
 - [@Szehljánik Péter](https://www.github.com/SzPeti8)
 - [@Deák Dominik Kornél](https://github.com/DeakDomi123)
-- [@Szabados Gergely](https://github.com/innocentpie)
+- [@Szabados Gergő](https://github.com/innocentpie)
 
 
 
