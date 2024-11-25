@@ -76,7 +76,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
                 <p className='text-xl font-bold text-center'>{questions[0]}</p>
                 <div className='answers-div'>
                   {answers[0].map((ans : string) => (
-                    <Button className='answer-button'>
+                    <Button className='answer-button' key={ans}>
                       <span className='text-xl text-center'>{ans}</span>
                     </Button>
                   ))}
