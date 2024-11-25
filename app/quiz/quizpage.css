@@ -20,7 +20,7 @@
   /* padding: 3.5rem 0 0 1rem; */
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: 66rem;
+  width: 94%;
   height: auto;
 }
 
@@ -52,7 +52,7 @@
   }
   
   .quiz-card{
-    width: 61%;
+    width: 100%;
   }
 
   .secondary-container{
