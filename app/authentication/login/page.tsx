@@ -44,8 +44,8 @@ const LoginPage: React.FC = () => {
       }
 
       await login(email, password);
-    } catch (err: any) {
-      setError(err.message || 'Hiba történt a bejelentkezés során.');
+    } catch {
+      setError('Hiba történt a bejelentkezés során.');
     } finally {
       setLoading(false);
     }
@@ -55,12 +55,6 @@ const LoginPage: React.FC = () => {
   return (
     <main className={styles.loginContainer}>
       <div className={styles.contentWrapper}>
-        {/* <Image
-          loading="lazy"
-          src={require("@/app/assets/images/LoginBackground.png").default}
-          className={styles.backgroundImage}
-          alt="Background"
-        /> */}
         <div className={styles.loginFormWrapper}>
           <h1 className={styles.pageTitle}>Kvízoldal</h1>
           <section className={styles.formSection}>
