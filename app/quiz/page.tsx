@@ -5,27 +5,51 @@ import { useAuth } from '../authentication/AuthContext';
 import './quizpage.css';
 import Header from "../header/Header";
 import pb from '../authentication/PocketBaseClient';
-import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Divider } from "@nextui-org/react";
+import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Divider, Pagination } from "@nextui-org/react";
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { categories } from './categories';
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
 
-const getQuizzes = async (filter: string = '') => {
-  const data = await pb.collection('quizzes').getList(1, 50, {
+const getQuizzes = async (page: number = 1, filter: string = '') => {
+  const perPage = 12;
+  const data = await pb.collection('quizzes').getList(page, perPage, {
     filter: filter,
     expand: 'creator',
   });
-  return data?.items as any[];
+  return data;
 };
 
 export default function QuizPage() {
-  const { user, loading } = useAuth();
+  const { user } = useAuth();
+
+  return (
+    <>
+      <Header quizMainHeaderMode={true} />
+      <div className='main-container'>
+        <Suspense fallback={<div><h1><p>Betöltés...</p></h1></div>}>
+          <QuizContent user={user} />
+        </Suspense>
+      </div>
+    </>
+  );
+}
+
+interface QuizContentProps {
+  user: any;
+}
+
+function QuizContent({ user }: QuizContentProps) {
   const [quizzes, setQuizzes] = useState<any[]>([]);
   const [quizLoading, setQuizLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [totalPages, setTotalPages] = useState<number>(1);
 
-  const loadQuizzes = async (searchQuery: string = '') => {
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get('search') || '';
+
+  const loadQuizzes = async (page: number = 1, searchQuery: string = '') => {
     try {
       let filter = '';
       if (searchQuery) {
@@ -36,14 +60,34 @@ export default function QuizPage() {
           filter = `category~"${searchQuery}"`;
         }
       }
-      const quizzesData = await getQuizzes(filter);
-      setQuizzes(quizzesData);
+      const data = await getQuizzes(page, filter);
+      setQuizzes(data.items);
+      setTotalPages(data.totalPages);
     } catch (error) {
       console.error('Quizzes fetch hiba:', error);
     } finally {
       setQuizLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (user) {
+      setCurrentPage(1); // Kereséskor visszaállunk az első oldalra
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (user) {
+      setQuizLoading(true);
+      loadQuizzes(currentPage, searchQuery);
+    }
+  }, [user, currentPage, searchQuery]);
+
+  // Ha az oldal vagy a kvízek betöltődnek
+  if (quizLoading) return (<div><h1><p>Betöltés...</p></h1></div>);
+
+  // Ha nincs bejelentkezve a felhasználó
+  if (!user) return null;
 
   const getBackgroundColor = (difficulty: string) => {
     switch (difficulty) {
@@ -58,92 +102,65 @@ export default function QuizPage() {
     }
   }
 
-  // Suspense által bebugyolált keresési paraméterek
   return (
-    <>
-      <Header quizMainHeaderMode={true} />
-      <div className='main-container'>
-        <Suspense fallback={<div><h1><p>Betöltés...</p></h1></div>}>
-          <QuizContent user={user} loadQuizzes={loadQuizzes} quizzes={quizzes} quizLoading={quizLoading} getBackgroundColor={getBackgroundColor} />
-        </Suspense>
-      </div>
-    </>
-  );
-}
-
-interface QuizContentProps {
-  user: any;
-  loadQuizzes: (searchQuery: string) => Promise<void>;
-  quizzes: any[];
-  quizLoading: boolean;
-  getBackgroundColor: (difficulty: string) => string;
-}
-
-function QuizContent({ user, loadQuizzes, quizzes, quizLoading, getBackgroundColor }: QuizContentProps) {
-  const searchParams = useSearchParams();
-  const searchQuery = searchParams.get('search') || '';
-
-  useEffect(() => {
-    if (user) {
-      loadQuizzes(searchQuery);
-    }
-  }, [user, searchQuery]);
-
-  // Ha az oldal vagy a kvízek betöltődnek
-  if (quizLoading) return (<div><h1><p>Betöltés...</p></h1></div>);
-
-  // Ha nincs bejelentkezve a felhasználó
-  if (!user) return null;
-
-  return (
-    <div className='secondary-container'>
-      {quizzes.map((quiz) => (
-        <Card className='m-2 quiz-card' shadow="sm" key={quiz.id}>
-          <CardHeader
-            className='difficulty-chip-div'
-            style={{
-              background: getBackgroundColor(quiz.difficulty),
-            }}>
-            <div>
-              {categories.map((cat) =>
-                cat.label === quiz.category ? (
-                  <div key={cat.label} title={cat.label}>
-                    {cat.icon}
-                  </div>
-                ) : null
-              )}
-            </div>
-            <div>
-              <Chip>{quiz.difficulty}</Chip>
-            </div>
-          </CardHeader>
-          <CardBody className="overflow-visible p-0">
-            <div className='m-2 quiz-description'>
-              <p className='text-small font-bold'>Készítő: {quiz.expand ? quiz.expand.creator.username : 'default'}</p>
-              <div className='flex flex-row justify-between'>
-                <h3 className='text-small font-bold'>Kérdések száma: {quiz.number_of_questions}</h3>
-                <p className='text-small font-bold' style={{ marginRight: '0.5rem' }}>Kvíz kód: {quiz.quiz_code}</p>
+    <div className='quiz-page-container'>
+      <div className='secondary-container'>
+        {quizzes.map((quiz) => (
+          <Card className='m-2 quiz-card' shadow="sm" key={quiz.id}>
+            <CardHeader
+              className='difficulty-chip-div'
+              style={{
+                background: getBackgroundColor(quiz.difficulty),
+              }}>
+              <div>
+                {categories.map((cat) =>
+                  cat.label === quiz.category ? (
+                    <div key={cat.label} title={cat.label}>
+                      {cat.icon}
+                    </div>
+                  ) : null
+                )}
               </div>
-              <Divider className="my-4" style={{ background: getBackgroundColor(quiz.difficulty), height: '0.2rem' }} />
-              <p className="text-small mt-1">{quiz.quiz_description}</p>
-            </div>
-          </CardBody>
-          <CardFooter className='quiz-card-footer'>
-            <div>
-              <Link href={`/quiz/${quiz.id}`} passHref>
-                <Button className='mr-1' color='primary' as="a">
-                  <span>Kitöltés (wip)</span>
+              <div>
+                <Chip>{quiz.difficulty}</Chip>
+              </div>
+            </CardHeader>
+            <CardBody className="overflow-visible p-0">
+              <div className='m-2 quiz-description'>
+                <p className='text-small font-bold'>Készítő: {quiz.expand ? quiz.expand.creator.username : 'default'}</p>
+                <div className='flex flex-row justify-between'>
+                  <h3 className='text-small font-bold'>Kérdések száma: {quiz.number_of_questions}</h3>
+                  <p className='text-small font-bold' style={{ marginRight: '0.5rem' }}>Kvíz kód: {quiz.quiz_code}</p>
+                </div>
+                <Divider className="my-4" style={{ background: getBackgroundColor(quiz.difficulty), height: '0.2rem' }} />
+                <p className="text-small mt-1">{quiz.quiz_description}</p>
+              </div>
+            </CardBody>
+            <CardFooter className='quiz-card-footer'>
+              <div>
+                <Link href={`/quiz/${quiz.id}`} passHref>
+                  <Button className='mr-1' color='primary' as="a">
+                    <span>Kitöltés (wip)</span>
+                  </Button>
+                </Link>
+              </div>
+              <div>
+                <Button className='ml-1' isDisabled color='secondary'>
+                  <span>Ranglista (wip)</span>
                 </Button>
-              </Link>
-            </div>
-            <div>
-              <Button className='ml-1' isDisabled color='secondary'>
-                <span>Ranglista (wip)</span>
-              </Button>
-            </div>
-          </CardFooter>
-        </Card>
-      ))}
+              </div>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
+      <div className='pagination-container'>
+        <Pagination
+          total={totalPages}
+          page={currentPage}
+          onChange={(page) => setCurrentPage(page)}
+          color={"warning"}
+        />
+      </div>
     </div>
   );
 }

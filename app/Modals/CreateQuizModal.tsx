@@ -129,7 +129,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
         return;
       }
 
-      const answersArray = q.answers.split(',').map(ans => ans.trim());
+      const answersArray = q.answers.split(';').map(ans => ans.trim());
       if (answersArray.length < 1 || answersArray.length > 4) {
         alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
         return;
@@ -158,7 +158,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
         category: category?.label || '',
         difficulty: difficulty?.label || '',
         questions: JSON.stringify(combinedQuestions.map(q => q.question_text)),
-        answers: JSON.stringify(combinedQuestions.map(q => q.answers.split(',').map(ans => ans.trim()))),
+        answers: JSON.stringify(combinedQuestions.map(q => q.answers.split(';').map(ans => ans.trim()))),
         correct_answers: JSON.stringify(combinedQuestions.map(q => q.correct_answer.trim())),
         creator: user?.id || '',
       };
@@ -173,7 +173,6 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
       await pb.collection('leaderboards').create(leaderboardData);
 
       alert('Kvíz sikeresen létrehozva!');
-      window.location.reload();
       clearQuiz();
       onClose();
     } catch (error) {
@@ -286,10 +285,10 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
                   />
                 </div>
                 <div className={styles.formGroup}>
-                  <label htmlFor={`answers-${index}`}>Válaszok (vesszővel elválasztva, maximum 4):</label>
+                  <label htmlFor={`answers-${index}`}>Válaszok (pontosvesszővel elválasztva, maximum 4):</label>
                   <Input
                     id={`answers-${index}`}
-                    placeholder="Válasz1, Válasz2, Válasz3, Válasz4"
+                    placeholder="Válasz1; Válasz2; Válasz3; Válasz4"
                     value={answers[index]}
                     onChange={(e) => updateQuestion(index, 'answers', e.target.value)}
                     required

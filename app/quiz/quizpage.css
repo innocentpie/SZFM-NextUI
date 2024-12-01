@@ -6,7 +6,7 @@
 }
 
 .main-container {
-  background-color: rgba(255, 255, 255, 0.3);;
+  background-color: rgba(255, 255, 255, 0.3);
   width: 68rem;
   height: calc(100vh - 4.5rem);
   margin: auto;
@@ -14,14 +14,20 @@
   scrollbar-width: thin;
 }
 
+.quiz-page-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
 .secondary-container{
   margin: auto;
-  margin-top: 16px;
-  /* padding: 3.5rem 0 0 1rem; */
+  margin-top: 0.25rem;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  width: 94%;
-  height: auto;
+  gap: 0.25rem;
+  width: 97%;
+  flex-grow: 1;
 }
 
 .quiz-card{
@@ -43,6 +49,13 @@
   justify-content: space-between;
 }
 
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
 @media (max-width: 1050px) {
   .main-container {
     overflow-y: auto;
@@ -56,7 +69,6 @@
   }
 
   .secondary-container{
-    /* padding: 4rem 0 0 1rem; */
     display: grid;
     grid-template-columns: repeat(1, 1fr);
   }
@@ -73,7 +85,6 @@
   }
 
   .secondary-container{
-    /* padding: 4rem 0 0 1rem; */
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     width: 100%;

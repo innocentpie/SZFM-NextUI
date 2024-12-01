@@ -106,7 +106,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     setCategory(matchedCategory || null);
     setDifficulty(matchedDifficulty || null);
     setQuestions(JSON.parse(quiz.questions));
-    setAnswers(JSON.parse(quiz.answers).map((ansArray: string[]) => ansArray.join(', ')));
+    setAnswers(JSON.parse(quiz.answers).map((ansArray: string[]) => ansArray.join('; ')));
     setCorrectAnswers(JSON.parse(quiz.correct_answers));
   };
 
@@ -117,7 +117,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     }
 
     for (let i = 0; i < questions.length; i++) {
-      const answerArray = answers[i].split(',').map(ans => ans.trim());
+      const answerArray = answers[i].split(';').map(ans => ans.trim());
       if (answerArray.length < 1 || answerArray.length > 4) {
         alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
         return;
@@ -140,7 +140,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       category: category.label,
       difficulty: difficulty.label,
       questions: JSON.stringify(questions),
-      answers: JSON.stringify(answers.map((ans) => ans.split(',').map((a) => a.trim()))),
+      answers: JSON.stringify(answers.map((ans) => ans.split(';').map((a) => a.trim()))),
       correct_answers: JSON.stringify(correctAnswers.map(q => q.trim())),
     };
 
@@ -207,6 +207,42 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     }
     onClose();
   };
+
+  const CopyButton = ({ quizCode }: any) => {
+    const [copied, setCopied] = useState(false);
+
+    const handleCopy = () => {
+      navigator.clipboard.writeText(quizCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    };
+
+    return (
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <strong>Kvíz megosztó kód:</strong>
+        <span>{quizCode}</span>
+        <button
+          onClick={handleCopy}
+          style={{
+            background: copied ? '#28a745' : '#ff8e2b', 
+            color: '#fff',
+            border: 'none',
+            padding: '0.25rem 0.5rem',
+            borderRadius: '4px',
+            cursor: 'pointer',
+            transition: 'background 0.3s ease',
+            width: '4rem',
+            height: '2rem',
+            fontSize: '0.75rem',
+          }}
+          aria-label="Copy to clipboard"
+        >
+          {copied ? 'Másolva!' : 'Másolás'}
+        </button>
+      </div>
+    );
+  };
+
 
   return (
     <>
@@ -301,9 +337,9 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
                       />
                     </div>
                     <div>
-                      <label>Válaszok (vesszővel elválasztva, maximum 4):</label>
+                      <label>Válaszok (pontosvesszővel elválasztva, maximum 4):</label>
                       <Input
-                        placeholder="Válasz1, Válasz2, Válasz3, Válasz4"
+                        placeholder="Válasz1; Válasz2; Válasz3; Válasz4"
                         value={answers[index]}
                         onChange={(e) =>
                           setAnswers((prev) => {
@@ -375,14 +411,15 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
               <ul>
                 {quizzes.map((quiz) => (
                   <li key={quiz.id}>
-                    <div>
-                      <strong>Kvíz megosztó kód:</strong> {quiz.quiz_code}
-                    </div>
-                    <div>
+                    <CopyButton quizCode={quiz.quiz_code} />
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                       <strong>Kategória:</strong> {quiz.category}
+                      {quiz.category && categories.map((cat) => (cat.label === quiz.category ? cat.icon : null))}
                     </div>
-                    <div>
+                    <br />
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
                       <strong>Nehézség:</strong> {quiz.difficulty}
+                      {quiz.difficulty && difficulties.map((diff) => (diff.label === quiz.difficulty ? diff.icon : null))}
                     </div>
                     {renderCreator(quiz)}
                     <Button size="sm" color="primary" onPress={() => handleEditQuiz(quiz)} style={{ marginRight: '1rem' }}>
