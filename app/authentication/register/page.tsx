@@ -15,6 +15,7 @@ const RegisterPage: React.FC = () => {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -22,40 +23,97 @@ const RegisterPage: React.FC = () => {
   const [isVisible, setIsVisible] = React.useState(false);
   const toggleVisibility = () => setIsVisible(!isVisible);
 
-  const [emailValue, setEmailValue] = React.useState("");
+  const [isVisible2, setIsVisible2] = React.useState(false);
+  const toggleVisibility2 = () => setIsVisible2(!isVisible2);
 
   const validateEmail = (value: string) => value.match(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/g);
 
   const isInvalid = React.useMemo(() => {
-    if (emailValue === "") return false;
+    if (email === "") return false;
+    return validateEmail(email) ? false : true;
+  }, [email]);
 
-    return validateEmail(emailValue) ? false : true;
-  }, [emailValue]);
+  const doPasswordsMatch = React.useMemo(() => {
+    if (password === "" || passwordConfirm === "") return false;
+    return password !== passwordConfirm;
+  }, [password, passwordConfirm]);
+
+  // Jelszó hosszának ellenőrzése
+  const isShortPassword = React.useMemo(() => {
+    return password.length > 0 && password.length < 5;
+  }, [password]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Ellenőrzés üres mezőkre
+    if (!username || !email || !password || !passwordConfirm) {
+      setError('Kérjük, töltsd ki az összes mezőt.');
+      setLoading(false);
+      return;
+    }
+
+    // Jelszavak ellenőrzése
+    if (doPasswordsMatch) {
+      setError('A két jelszó nem egyezik.');
+      setLoading(false);
+      return;
+    }
+
+    // Jelszó hosszának ellenőrzése
+    if (isShortPassword) {
+      setError('A jelszónak legalább 5 karakter hosszúnak kell lennie.');
+      setLoading(false);
+      return;
+    }
+
+    // E-mail ellenőrzés
+    if (!validateEmail(email)) {
+      setError('Kérjük érvényes emailt adjon meg.');
+      emailInputElement.current?.focus(); 
+      setLoading(false);
+      return;
+    }
+
     try {
-      if(!validateEmail(email))
-      {
-        emailInputElement.current?.focus(); 
+      const existingUsername = await pb.collection('users').getFullList({
+        filter: `username="${username}"`,
+      });
+      if (existingUsername.length > 0) {
+        setError('A megadott felhasználónév már létezik.');
+        setLoading(false);
         return;
       }
 
+      const existingEmail = await pb.collection('users').getFullList({
+        filter: `email="${email}"`,
+      });
+      if (existingEmail.length > 0) {
+        setError('A megadott e-mail cím már regisztrálva van.');
+        setLoading(false);
+        return;
+      }
+    } catch {
+      setError('Ismeretlen hiba történt, próbálja úrja később.');
+      setLoading(false);
+      return;
+    }
+
+    try {
       const data = {
         "username": username,
         "email": email,
         "emailVisibility": true,
         "password": password,
-        "passwordConfirm": password,
+        "passwordConfirm": passwordConfirm,
         "profile_picture": "avatar1",
       };
       await pb.collection('users').create(data);
       await login(email, password);
     } catch (err: any) {
-      setError('Hiba történt a regisztráció során. Lehet hogy már létezik a felhasználó.');
-      setError(err.message);
+      setError('Hiba történt a regisztráció során: ' + ((error ? error : err.message) || 'Ismeretlen hiba.'));
     } finally {
       setLoading(false);
     }
@@ -94,7 +152,6 @@ const RegisterPage: React.FC = () => {
                     isInvalid={isInvalid}
                     color={isInvalid ? "danger" : "default"}
                     errorMessage="Kérjük érvényes emailt adjon meg"
-                    onValueChange={setEmailValue}
                     onChange={(e) => setEmail(e.target.value)}
                   />
                   <Input
@@ -104,6 +161,15 @@ const RegisterPage: React.FC = () => {
                     required
                     label="Jelszó"
                     value={password}
+                    isInvalid={doPasswordsMatch || isShortPassword}
+                    errorMessage={
+                      doPasswordsMatch
+                        ? "A két jelszó nem egyezik"
+                        : isShortPassword
+                        ? "A jelszónak legalább 5 karakter hosszúnak kell lennie"
+                        : ""
+                    }
+                    color={(doPasswordsMatch || isShortPassword) ? "danger" : "default"}
                     endContent={
                       <button className="focus:outline-none" type="button" onClick={toggleVisibility} aria-label="toggle password visibility">
                         {isVisible ? (
@@ -115,6 +181,34 @@ const RegisterPage: React.FC = () => {
                     }
                     type={isVisible ? "text" : "password"}
                     onChange={(e) => setPassword(e.target.value)}
+                  />
+                  <Input
+                    className={styles.inputField}
+                    variant='faded'
+                    isRequired
+                    required
+                    label="Jelszó megerősítése"
+                    value={passwordConfirm}
+                    isInvalid={doPasswordsMatch || isShortPassword}
+                    color={(doPasswordsMatch || isShortPassword) ? "danger" : "default"}
+                    errorMessage={
+                      doPasswordsMatch
+                        ? "A két jelszó nem egyezik"
+                        : isShortPassword
+                        ? "A jelszónak legalább 5 karakter hosszúnak kell lennie"
+                        : ""
+                    }
+                    endContent={
+                      <button className="focus:outline-none" type="button" onClick={toggleVisibility2} aria-label="toggle password visibility">
+                        {isVisible2 ? (
+                          <EyeSlashFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        ) : (
+                          <EyeFilledIcon className="text-2xl text-default-400 pointer-events-none" />
+                        )}
+                      </button>
+                    }
+                    type={isVisible2 ? "text" : "password"}
+                    onChange={(e) => setPasswordConfirm(e.target.value)}
                   />
                 </div>
                 <Button 
