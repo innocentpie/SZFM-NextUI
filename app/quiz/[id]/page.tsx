@@ -23,10 +23,68 @@ const getQuiz = async (id : string) => {
   return data as any;
 };
 
+let runningTimeout : NodeJS.Timeout | null = null;
+let shouldStartTimeout : boolean = true;
+function startTimer(startTimeMS : number,
+  startDelayMs : number, 
+  onTimerTick : (currentTime: number) => void,
+  onTimerOver : () => void) {
+    
+  setTimeout(() => {
+    let prevTimeMS = Date.now();
+    let timerCurrentMS = startTimeMS;
+
+    runningTimeout = setInterval(function() {
+      let nowMS = Date.now();
+      let diff = nowMS - prevTimeMS;
+      prevTimeMS = nowMS;
+
+      timerCurrentMS -= diff;
+      if(timerCurrentMS < 0) {
+        timerCurrentMS = 0;
+      }
+      
+      onTimerTick(timerCurrentMS);
+
+      if(timerCurrentMS <= 0) {
+        if(runningTimeout != null) {
+          clearInterval(runningTimeout);
+          runningTimeout = null;
+        }
+        
+        onTimerOver();
+      }
+    }, 10)
+  }, startDelayMs)
+}
+
+class TimerData {
+  public timerProgressPct : number = 100;
+  public color: "success" | "warning" | "danger" = "success";
+  public timeMS : number = 0;
+}
+
+const formatMSToLabel = (ms : number) => {
+  let d = new Date(ms);
+  let parts = [
+    d.getMinutes(),
+    d.getSeconds(),
+    // d.getMilliseconds()
+  ];
+  // Zero-pad
+  let formatted = parts.map(s => String(s).padStart(2,'0')).join(':');
+  return formatted;
+}
+
+let correctAnswerCount = 0;
+
 export default function QuizPage({ params }: { params: {id: string }} ){
   const { user, loading } = useAuth();
   const [quizLoading, setQuizLoading] = useState<boolean>(true);
+  const [quizFinished, setQuizFinished] = useState<boolean>(false);
   const [quiz, setQuiz] = useState<any>(null);
+  const [questionIndex, setQuestionIdex] = useState<number>(0);
+  const [timerData, setTimerData] = useState<TimerData>();
   useEffect(() => {
     if (user) {
       loadPage();
@@ -38,7 +96,6 @@ export default function QuizPage({ params }: { params: {id: string }} ){
       let id = (params).id;
       let quiz = await getQuiz(id);
       setQuiz(quiz);
-      console.log(quiz);
     }
     catch (error) {
       console.error('Quiz fetch hiba:', error);
@@ -61,10 +118,80 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const questions = JSON.parse(quiz.questions);
   const answers = JSON.parse(quiz.answers);
   const correct_answers = JSON.parse(quiz.correct_answers);
+  const timeLimitMS = 10000;
 
+  const submitAnswer = (answerIndex : number | null) => {
+    if(answerIndex != null) {
+      if(correct_answers[questionIndex][0] == answers[questionIndex][answerIndex])
+        correctAnswerCount += 1;
+    }
+
+    if(questions.length > questionIndex + 1) {
+      shouldStartTimeout = true;
+      if(runningTimeout != null){
+        clearInterval(runningTimeout);
+        runningTimeout = null;
+      }
+      setQuestionIdex(questionIndex + 1);
+    }
+    else{
+      setQuizFinished(true);
+    }
+
+    console.log(correctAnswerCount);
+  }
+
+
+  if(runningTimeout == null && shouldStartTimeout){
+    shouldStartTimeout = false;
+
+    let iTimerD = new TimerData();
+    iTimerD.timeMS = timeLimitMS;
+    iTimerD.timerProgressPct = 100;
+    setTimerData(iTimerD);
+
+    startTimer(timeLimitMS, 1000,
+      (currentTime) => {
+        let pct = (currentTime / timeLimitMS) * 100;
+        let d : TimerData = new TimerData();
+        d.timeMS = currentTime;
+        d.timerProgressPct = pct;
+
+        if(pct > 66)
+          d.color = "success";
+        else if(pct > 33)
+          d.color = "warning";
+        else
+          d.color = "danger";
+
+        setTimerData(d);
+      },
+      () => {
+        submitAnswer(null);
+        // alert("timer out");
+      });
+  }
+      
   return(
     <>
     <Header quizMainHeaderMode={false}/>
+    {quizFinished &&
+    <div className='outer-content-div'>
+      <div className='content-div'>
+      <div className='center-col'>
+          <Card className='main-card'>
+            <CardBody>
+              <div className='card-body'>
+                <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount}</p>
+              </div>
+            </CardBody>
+          </Card>
+        </div>
+      </div>
+    </div>
+    }
+
+    {!quizFinished &&
     <div className='outer-content-div'>
       <div className='content-div'>
         <div className='side-col'>
@@ -73,10 +200,10 @@ export default function QuizPage({ params }: { params: {id: string }} ){
           <Card className='main-card'>
             <CardBody>
               <div className='card-body'>
-                <p className='text-xl font-bold text-center'>{questions[0]}</p>
+                <p className='text-xl font-bold text-center'>{questions[questionIndex]}</p>
                 <div className='answers-div'>
-                  {answers[0].map((ans : string, index : number) => (
-                    <Button className='answer-button' key={index}>
+                  {answers[questionIndex].map((ans : string, index : number) => (
+                    <Button className='answer-button' key={index} onClick={() => submitAnswer(index)}>
                       <span className='text-xl text-center'>{ans}</span>
                     </Button>
                   ))}
@@ -97,11 +224,12 @@ export default function QuizPage({ params }: { params: {id: string }} ){
                       svg: "w-24 h-24",
                       label: "text-xl"
                     }}
-                    value={40}
+                    disableAnimation
+                    value={timerData?.timerProgressPct ?? 100}
                     strokeWidth={4}
-                    color="warning"
+                    color={timerData?.color ?? "success"}
                     showValueLabel={false}
-                    label="0:12"
+                    label={timerData?.timeMS != null ? formatMSToLabel(timerData.timeMS) : formatMSToLabel(timeLimitMS)}
                   />
                 </div>
               </div>
@@ -110,6 +238,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
         </div>
       </div>
     </div>
+    }
     </>
   )
 }
