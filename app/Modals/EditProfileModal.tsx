@@ -78,7 +78,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
                   className="rounded-full"
                 />
                 <div>Válassz egy profilképet:</div>
-                <div className="flex flex-wrap gap-4 mt-2">
+                <div className="flex flex-wrap gap-3 mt-2">
                   {predefinedImageKeys.map((imageKey) => (
                     <div
                       key={imageKey}
