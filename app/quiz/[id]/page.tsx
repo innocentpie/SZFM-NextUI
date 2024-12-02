@@ -122,7 +122,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
 
   const submitAnswer = (answerIndex : number | null) => {
     if(answerIndex != null) {
-      if(correct_answers[questionIndex][0] == answers[questionIndex][answerIndex])
+      if(correct_answers[questionIndex] == answers[questionIndex][answerIndex])
         correctAnswerCount += 1;
     }
 
@@ -137,8 +137,6 @@ export default function QuizPage({ params }: { params: {id: string }} ){
     else{
       setQuizFinished(true);
     }
-
-    console.log(correctAnswerCount);
   }
 
 
