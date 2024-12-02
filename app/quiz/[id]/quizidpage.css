@@ -63,5 +63,6 @@
 
 .answer-button {
     width: 40%;
-    height: 6rem;
+    height: 9rem;
+    text-wrap: auto;
 }
