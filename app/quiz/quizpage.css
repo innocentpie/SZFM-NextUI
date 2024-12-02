@@ -65,7 +65,7 @@
   }
   
   .quiz-card{
-    width: 100%;
+    width: 98%;
   }
 
   .secondary-container{
@@ -89,6 +89,10 @@
     grid-template-columns: repeat(4, 1fr);
     width: 100%;
     scrollbar-width: thin;
+  }
+
+  .quiz-page-container {
+    display: block;
   }
 }
 

@@ -83,7 +83,7 @@ export default function Header({ quizMainHeaderMode }: { quizMainHeaderMode: boo
             <input
               key='default'
               type="text"
-              placeholder="Keress kvíz kód vagy kategória alapján..."
+              placeholder="Keress kód, kategória, nehézség vagy készítő alapján..."
               className={styles.customInput}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}

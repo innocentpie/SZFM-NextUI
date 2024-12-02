@@ -10,13 +10,14 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { categories } from './categories';
 
-export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
+export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto';
 
 const getQuizzes = async (page: number = 1, filter: string = '') => {
   const perPage = 12;
-  const data = await pb.collection('quizzes').getList(page, perPage, {
+  const data = await pb.collection('verifiedQuizzes').getList(page, perPage, {
+    sort: '-created',
     filter: filter,
-    expand: 'creator',
+    expand: 'quiz_id,quiz_id.creator',
   });
   return data;
 };
@@ -53,12 +54,10 @@ function QuizContent({ user }: QuizContentProps) {
     try {
       let filter = '';
       if (searchQuery) {
-        const hasUppercase = /[A-Z]/.test(searchQuery);
-        if (hasUppercase) {
-          filter = `quiz_code="${searchQuery}"`;
-        } else {
-          filter = `category~"${searchQuery}"`;
-        }
+        filter = `quiz_id.quiz_code~"${searchQuery}" 
+        || quiz_id.category~"${searchQuery}" 
+        || quiz_id.difficulty~"${searchQuery}" 
+        || quiz_id.creator.username~"${searchQuery}"`;
       }
       const data = await getQuizzes(page, filter);
       setQuizzes(data.items);
@@ -72,7 +71,7 @@ function QuizContent({ user }: QuizContentProps) {
 
   useEffect(() => {
     if (user) {
-      setCurrentPage(1); // Kereséskor visszaállunk az első oldalra
+      setCurrentPage(1);
     }
   }, [searchQuery]);
 
@@ -83,24 +82,22 @@ function QuizContent({ user }: QuizContentProps) {
     }
   }, [user, currentPage, searchQuery]);
 
-  // Ha az oldal vagy a kvízek betöltődnek
   if (quizLoading) return (<div><h1><p>Betöltés...</p></h1></div>);
 
-  // Ha nincs bejelentkezve a felhasználó
   if (!user) return null;
 
   const getBackgroundColor = (difficulty: string) => {
     switch (difficulty) {
       case "Könnyű":
-        return '#00ff32'; // Zöld - könnyű
+        return '#00ff32';
       case "Közepes":
-        return '#FFC300'; // Sárga - közepes
+        return '#FFC300';
       case "Nehéz":
-        return '#FF1500'; // Piros - nehéz
+        return '#FF1500';
       default:
-        return '#8a8884'; // Alapértelmezett szürke
+        return '#8a8884';
     }
-  }
+  };
 
   return (
     <div className='quiz-page-container'>
@@ -110,11 +107,11 @@ function QuizContent({ user }: QuizContentProps) {
             <CardHeader
               className='difficulty-chip-div'
               style={{
-                background: getBackgroundColor(quiz.difficulty),
+                background: getBackgroundColor(quiz.expand.quiz_id.difficulty),
               }}>
               <div>
                 {categories.map((cat) =>
-                  cat.label === quiz.category ? (
+                  cat.label === quiz.expand.quiz_id.category ? (
                     <div key={cat.label} title={cat.label}>
                       {cat.icon}
                     </div>
@@ -122,23 +119,25 @@ function QuizContent({ user }: QuizContentProps) {
                 )}
               </div>
               <div>
-                <Chip>{quiz.difficulty}</Chip>
+                <Chip>{quiz.expand.quiz_id.difficulty}</Chip>
               </div>
             </CardHeader>
             <CardBody className="overflow-visible p-0">
               <div className='m-2 quiz-description'>
-                <p className='text-small font-bold'>Készítő: {quiz.expand ? quiz.expand.creator.username : 'default'}</p>
+                <p className='text-small font-bold'>
+                  Készítő: {quiz.expand.quiz_id.creator ? quiz.expand.quiz_id.expand.creator.username : 'Ismeretlen'}
+                </p>
                 <div className='flex flex-row justify-between'>
-                  <h3 className='text-small font-bold'>Kérdések száma: {quiz.number_of_questions}</h3>
-                  <p className='text-small font-bold' style={{ marginRight: '0.5rem' }}>Kvíz kód: {quiz.quiz_code}</p>
+                  <h3 className='text-small font-bold'>Kérdések száma: {quiz.expand.quiz_id.number_of_questions}</h3>
+                  <p className='text-small font-bold' style={{ marginRight: '0.5rem' }}>Kvíz kód: {quiz.expand.quiz_id.quiz_code}</p>
                 </div>
-                <Divider className="my-4" style={{ background: getBackgroundColor(quiz.difficulty), height: '0.2rem' }} />
-                <p className="text-small mt-1">{quiz.quiz_description}</p>
+                <Divider className="my-4" style={{ background: getBackgroundColor(quiz.expand.quiz_id.difficulty), height: '0.2rem' }} />
+                <p className="text-small mt-1">{quiz.expand.quiz_id.quiz_description}</p>
               </div>
             </CardBody>
             <CardFooter className='quiz-card-footer'>
               <div>
-                <Link href={`/quiz/${quiz.id}`} passHref>
+                <Link href={`/quiz/${quiz.expand.quiz_id.id}`} passHref>
                   <Button className='mr-1' color='primary' as="a">
                     <span>Kitöltés (wip)</span>
                   </Button>

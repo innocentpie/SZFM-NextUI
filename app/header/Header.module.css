@@ -17,8 +17,8 @@
 
 .navigation {
   display: flex;
-  gap: 26px;
-  margin-left: 20px;
+  gap: 1rem;
+  margin-left: 0.25rem;
 }
 
 .searchButton,
@@ -42,7 +42,7 @@
   gap: 20px;
 }
 
-@media (max-width: 1300px) {
+@media (max-width: 1500px) {
   .titleContainer {
     position: absolute;
     left: 70%;
@@ -53,7 +53,7 @@
   }
 }
 
-@media (max-width: 950px) {
+@media (max-width: 1100px) {
   .titleContainer {
     display: none;
   }
@@ -68,7 +68,7 @@
 
 .inputContainer {
   position: relative;
-  width: 22rem;
+  width: 28rem;
 }
 
 .customInput {

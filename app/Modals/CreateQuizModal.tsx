@@ -172,7 +172,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
 
       await pb.collection('leaderboards').create(leaderboardData);
 
-      alert('Kvíz sikeresen létrehozva!');
+      alert('Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.');
       clearQuiz();
       onClose();
     } catch (error) {

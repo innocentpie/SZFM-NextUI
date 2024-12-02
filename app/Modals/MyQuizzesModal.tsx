@@ -13,6 +13,7 @@ import {
   SelectItem,
   Divider,
   Input,
+  Tooltip
 } from '@nextui-org/react';
 import { useAuth } from '../authentication/AuthContext';
 import pb from '../authentication/PocketBaseClient';
@@ -46,12 +47,15 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
   const [loading, setLoading] = useState<boolean>(false);
   const [editingQuiz, setEditingQuiz] = useState<Quiz | null>(null);
   const [quizDescription, setQuizDescription] = useState('');
-  const [category, setCategory] = useState<{ label: string; icon: JSX.Element } | null>(null);
-  const [difficulty, setDifficulty] = useState<{ label: string; icon: JSX.Element } | null>(null);
+  const [category, setCategory] = useState<{ label: string; icon: JSX.Element }>();
+  const [difficulty, setDifficulty] = useState<{ label: string; icon: JSX.Element }>();
   const [questions, setQuestions] = useState<string[]>([]);
   const [answers, setAnswers] = useState<string[]>([]);
   const [correctAnswers, setCorrectAnswers] = useState<string[]>([]);
   const [hasModified, setHasModified] = useState<boolean>(false);
+  const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [verifiedQuizIds, setVerifiedQuizIds] = useState<string[]>([]);
 
   const categories = [
     { label: 'matematika', icon: <icons.MynauiMathSolid /> },
@@ -86,6 +90,8 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
             sort: '-created',
           });
         setQuizzes(quizzesResponse);
+        const verifiedResponse = await pb.collection('verifiedQuizzes').getFullList();
+        setVerifiedQuizIds(verifiedResponse.map((v: any) => v.quiz_id));
       } catch (error) {
         console.error('Fetch error:', error);
       } finally {
@@ -98,16 +104,77 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     }
   }, [isOpen, user]);
 
+  useEffect(() => {
+    if (searchTerm === '') {
+      setFilteredQuizzes(quizzes);
+    } else if ("státusz".includes(searchTerm.toLowerCase())) {
+      // Szűrés nem hitelesített kvízekre
+      setFilteredQuizzes(quizzes.filter((quiz) => !verifiedQuizIds.includes(quiz.id)));
+    } else {
+      const searchLower = searchTerm.toLowerCase();
+      setFilteredQuizzes(
+        quizzes.filter((quiz: any) =>
+          quiz.quiz_code.toLowerCase().includes(searchLower) ||
+          quiz.category.toLowerCase().includes(searchLower) ||
+          quiz.difficulty.toLowerCase().includes(searchLower) ||
+          (quiz.expand?.creator?.username || '').toLowerCase().includes(searchLower)
+        )
+      );
+    }
+  }, [searchTerm, quizzes, verifiedQuizIds]);
+
+  const handleVerifyQuiz = async (quizId: string) => {
+    if (verifiedQuizIds.includes(quizId)) return;
+    try {
+      await pb.collection('verifiedQuizzes').create({ quiz_id: quizId });
+      setHasModified(true);
+      setVerifiedQuizIds((prev) => [...prev, quizId]);
+    } catch (error) {
+      console.error('Verify error:', error);
+      alert('Hiba történt a kvíz hitelesítésekor.');
+    }
+  };
+
+  const handleUnverifyQuiz = async (quizId: string) => {
+    if (!verifiedQuizIds.includes(quizId)) return;
+    try {
+      const record = await pb.collection('verifiedQuizzes').getFirstListItem(`quiz_id="${quizId}"`);
+      await pb.collection('verifiedQuizzes').delete(record.id);
+      setHasModified(true);
+      setVerifiedQuizIds((prev) => prev.filter((id) => id !== quizId));
+    } catch (error) {
+      console.error('Unverify error:', error);
+      alert('Hiba történt a kvíz hitelesítésének visszavonásakor.');
+    }
+  };
+
   const handleEditQuiz = (quiz: Quiz) => {
     setEditingQuiz(quiz);
     setQuizDescription(quiz.quiz_description);
     const matchedCategory = categories.find((cat) => cat.label === quiz.category);
     const matchedDifficulty = difficulties.find((diff) => diff.label === quiz.difficulty);
-    setCategory(matchedCategory || null);
-    setDifficulty(matchedDifficulty || null);
+    setCategory(matchedCategory);
+    setDifficulty(matchedDifficulty);
     setQuestions(JSON.parse(quiz.questions));
     setAnswers(JSON.parse(quiz.answers).map((ansArray: string[]) => ansArray.join('; ')));
     setCorrectAnswers(JSON.parse(quiz.correct_answers));
+  };
+
+  const handleSearch = (term: string) => {
+    setSearchTerm(term);
+    if ("státusz".includes(term.toLowerCase())) {
+      setFilteredQuizzes(quizzes.filter((quiz) => !verifiedQuizIds.includes(quiz.id)));
+    } else {
+      const searchLower = term.toLowerCase();
+      setFilteredQuizzes(
+        quizzes.filter((quiz: any) =>
+          quiz.quiz_code.toLowerCase().includes(searchLower) ||
+          quiz.category.toLowerCase().includes(searchLower) ||
+          quiz.difficulty.toLowerCase().includes(searchLower) ||
+          (quiz.expand?.creator?.username || '').toLowerCase().includes(searchLower)
+        )
+      );
+    }
   };
 
   const handleEditSubmit = async () => {
@@ -149,9 +216,10 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       setQuizzes((prevQuizzes) =>
         prevQuizzes.map((quiz) => (quiz.id === editingQuiz.id ? updatedQuiz : quiz))
       );
+      handleUnverifyQuiz(editingQuiz.id);
       setHasModified(true);
       setEditingQuiz(null);
-      alert('Kvíz sikeresen frissítve!');
+      alert('Kvíz sikeresen frissítve! Adminisztrátor jóváhagyásra vár.');
     } catch (error) {
       console.error('Update quiz error:', error);
       alert('Hiba történt a kvíz frissítésekor.');
@@ -224,7 +292,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
         <button
           onClick={handleCopy}
           style={{
-            background: copied ? '#28a745' : '#ff8e2b', 
+            background: copied ? '#28a745' : '#ff8e2b',
             color: '#fff',
             border: 'none',
             padding: '0.25rem 0.5rem',
@@ -243,6 +311,43 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     );
   };
 
+  const renderVerification = (quiz: Quiz) => {
+    const isVerified = verifiedQuizIds.includes(quiz.id);
+
+    return (
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', marginTop: '0.5rem', marginBottom: '0.5rem' }}>
+        {user?.role && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0' }}>
+            <strong>Jóváhagyás:</strong>
+            <Tooltip content="Jóváhagyás" key={"success"} color={"success"}>
+              <Button
+                size="sm"
+                disabled={isVerified}
+                onPress={() => handleVerifyQuiz(quiz.id)}
+                style={{ background: 'transparent' }}
+              >
+                <icons.Accept />
+              </Button>
+            </Tooltip>
+            <Tooltip content="Megtagadás" key={"danger"} color={"danger"}>
+              <Button
+                size="sm"
+                onPress={() => handleUnverifyQuiz(quiz.id)}
+                disabled={!isVerified}
+                style={{ background: 'transparent' }}
+              >
+                <icons.Deny />
+              </Button>
+            </Tooltip>
+          </div>
+        )}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <strong>Státusz:</strong>
+          {isVerified ? <Tooltip content="Hitelesített" color={"success"}><Button style={{ background: 'transparent' }} disabled={true}><icons.Accept /></Button></Tooltip> : <Tooltip content="Nem elfogadott/Jóváhagyásra vár" key={"danger"} color={"danger"}><Button style={{ background: 'transparent' }} disabled={true}><icons.Deny /></Button></Tooltip>}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <>
@@ -262,11 +367,12 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
               <div className={styles.formGroup}>
                 <label>Kategória:</label>
                 <Select
+                  isRequired
+                  defaultSelectedKeys={[category?.label || '']}
                   placeholder="Válassz kategóriát"
-                  value={category?.label || ''}
                   onChange={(e) => {
                     const selectedCategory = categories.find((cat) => cat.label === e.target.value);
-                    setCategory(selectedCategory || null);
+                    setCategory(selectedCategory);
                   }}
                   className={styles.select}
                   aria-label="Kategória kiválasztása"
@@ -280,7 +386,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
                   }
                 >
                   {categories.map((cat) => (
-                    <SelectItem key={cat.label} value={cat.label} aria-label={`Kategória: ${cat.label}`}>
+                    <SelectItem key={cat.label} value={cat.label} textValue={cat.label}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {cat.icon}
                         {cat.label}
@@ -292,11 +398,12 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
               <div className={styles.formGroup}>
                 <label>Nehézség:</label>
                 <Select
+                  isRequired
                   placeholder="Válassz nehézséget"
-                  value={difficulty?.label || ''}
+                  defaultSelectedKeys={[difficulty?.label || '']}
                   onChange={(e) => {
                     const selectedDifficulty = difficulties.find((diff) => diff.label === e.target.value);
-                    setDifficulty(selectedDifficulty || null);
+                    setDifficulty(selectedDifficulty);
                   }}
                   aria-label="Nehézség kiválasztása"
                   renderValue={() =>
@@ -309,7 +416,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
                   }
                 >
                   {difficulties.map((diff) => (
-                    <SelectItem key={diff.label} value={diff.label}>
+                    <SelectItem key={diff.label} value={diff.label} textValue={diff.label}>
                       <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                         {diff.icon}
                         {diff.label}
@@ -401,15 +508,28 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       )}
       <Modal isOpen={isOpen} onClose={handleModalClose} closeButton style={{ top: '1.5rem', position: 'absolute' }}>
         <ModalContent>
-          <ModalHeader>Kvízek</ModalHeader>
+          <ModalHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span>Kvízek</span>
+            <div className={styles.inputContainer}>
+              <input
+                key="default"
+                type="text"
+                placeholder="Keresés...(pl. státusz)"
+                className={styles.customInput}
+                value={searchTerm}
+                onChange={(e) => handleSearch(e.target.value)}
+              />
+              <icons.RivetIconsMagnifyingGlass className={styles.icon} />
+            </div>
+          </ModalHeader>
           <ModalBody>
             {loading ? (
               <div>Betöltés...</div>
-            ) : quizzes.length === 0 ? (
-              <div>Nincsenek kvízek.</div>
+            ) : filteredQuizzes.length === 0 ? (
+              <div>Nincs találat.</div>
             ) : (
               <ul>
-                {quizzes.map((quiz) => (
+                {filteredQuizzes.map((quiz) => (
                   <li key={quiz.id}>
                     <CopyButton quizCode={quiz.quiz_code} />
                     <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -422,6 +542,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
                       {quiz.difficulty && difficulties.map((diff) => (diff.label === quiz.difficulty ? diff.icon : null))}
                     </div>
                     {renderCreator(quiz)}
+                    {renderVerification(quiz)}
                     <Button size="sm" color="primary" onPress={() => handleEditQuiz(quiz)} style={{ marginRight: '1rem' }}>
                       Szerkeszt
                     </Button>
