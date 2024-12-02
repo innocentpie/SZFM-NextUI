@@ -1,31 +1,35 @@
 
 # SZFM Kvízoldal Project
+
+
+
+
+# Dokumentáció
+## Követelmény Specifikáció
+- #### Áttekintés
 Az alkalmazás célja játékos módú iskolai tanulmányokat kiegészítő tanulási lehetőség kvízeken keresztül.  Az alkalmazás rendelkezik Webes felülettel, amelyen keresztül
 elérhető az összes felhasználói funkció. A kvízek kategóriák szerint vannak csoportosítva, melyeket a felhasználók szabadon megoldhatnak. Ezek megoldására idő
 és pontosság alapján pontszámot kapnak a felhasználók.  A kvízekhez eredménytábla is tartozik, ahova felkerülnek a legjobban teljesítő felhasználók és eredményeik. Lehetőség van kvízek létrehozására is bármely felhasználó által.
 
-
-
-## Documentation
-- [User Story](/documentation/UserStory.md)
 - [Jelenlegi helyzet](/documentation/JelenlegiHelyzet.md)
+
+
 - [Vágyálom rendszer](/documentation/VagyalomRendszer.md)
 - [Funkcionális követelmények](/documentation/FunkcionalisKovetelmenyek.md)
-- [**Követelménylista FIXMElink**](https://docs.google.com/document/d/1HVqWFxbzCuthdtFXfPDTdrWRvUNI0WBZ4gA-M4g6DtM/edit?fbclid=IwY2xjawGwc45leHRuA2FlbQIxMAABHaHC_qAbnsifYzwqn7j_5N8knamT9Ncc00NDhUSFiygFbkGvX0muXltshQ_aem_rh4SNp0TCoiBWz4wgJJMyw&tab=t.0)
+- [Rendszerre vonatkozó törvények, szabványok, ajánlások](/documentation/TorvenyekSzabvanyokAjanlasok.md)
+- [Jelenlegi üzleti folyamatok modellje](/documentation/JelenlegiUzletiFolyamatokModellje.md)
+- [Követelménylista ](/documentation//Kovetelmenylista.md)
 - [Szabad riport](/documentation/SzabadRiport.md)
 - [Irányított riport](/documentation/IrarnyitottRiport.md)
-- [Minutes of meetings](/documentation/MinutesOfMeetings.md)
-- [Rendszerterv](/documentation/Rendszerterv.md)
 
-## Figma tervek
-### Bejelentkező oldal:
-![Login oldal](/documentation//figmaDesigns/Login.jpg "Login")
-### Regisztráló oldal:
-![Register oldal](/documentation//figmaDesigns/Register.jpg "Register")
-### Fő oldal:
-![Fő oldal](/documentation//figmaDesigns/Fooldal.png "Fo")
-### Kitöltő oldal:
-![Kitolto oldal](/documentation//figmaDesigns/Kitolto.png "Kitolto")
+## Funkcionális Specifikáció
+- [User Story](/documentation/UserStory.md)
+- [Rendszerterv](/documentation/Rendszerterv.md)
+- [Képernyő tervek](/documentation/Kepernyotervek.md)
+- [Use Case Ábra](/documentation/Usecase.md)
+- [Adatbázis Terv](/documentation//AdatbazisStruktura.md)
+- [Minutes of meetings](/documentation/MinutesOfMeetings.md)
+
 ## KanBan Board
 - [Trello](https://trello.com/b/SPU09TlD/szfm-csk2-kanban-board)
 
