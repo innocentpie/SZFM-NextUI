@@ -41,10 +41,16 @@ elérhető az összes felhasználói funkció. A kvízek kategóriák szerint va
 ## Funkcionális Specifikáció
 - [User Story](/documentation/UserStory.md)
 - [Rendszerterv](/documentation/Rendszerterv.md)
+- [Jelenlegi Helyzet](/documentation/FunkcSpecJelenlegiHelyzet.md)
 - [Képernyő tervek](/documentation/Kepernyotervek.md)
+- [Minutes of meetings](/documentation/MinutesOfMeetings.md)
+
+## Rendszerterv
 - [Use Case Ábra](/documentation/Usecase.md)
 - [Adatbázis Terv](/documentation//AdatbazisStruktura.md)
-- [Minutes of meetings](/documentation/MinutesOfMeetings.md)
+- [Telepítési Terv](/documentation/TelepitesiTerv.md)
+- [Tesztterv](/documentation/TesztTerv.md)              //TODO
+- [Projektterv](/documentation/ProjektTerv.md)          //TODO
 
 ## Figma Links
 - [Login](https://www.figma.com/proto/HZceAZjbEJ74k7ruRHOFkr/Login?node-id=0-1&t=vne3hacnIJxAREPG-1)
