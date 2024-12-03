@@ -30,6 +30,11 @@ elérhető az összes felhasználói funkció. A kvízek kategóriák szerint va
 - [Adatbázis Terv](/documentation//AdatbazisStruktura.md)
 - [Minutes of meetings](/documentation/MinutesOfMeetings.md)
 
+## Figma Links
+- [Login](https://www.figma.com/proto/HZceAZjbEJ74k7ruRHOFkr/Login?node-id=0-1&t=vne3hacnIJxAREPG-1)
+- [Signup](https://www.figma.com/proto/HZceAZjbEJ74k7ruRHOFkr/Login?node-id=4-10&t=akJb23WfnjgB0Yji-1)
+- [Fő oldal](https://www.figma.com/proto/EAczEucAD3LXRYjv0El45o/Kv%C3%ADzoldal?node-id=15-25&t=ThqtxZmHVYgSmY2F-1)
+
 ## KanBan Board
 - [Trello](https://trello.com/b/SPU09TlD/szfm-csk2-kanban-board)
 
