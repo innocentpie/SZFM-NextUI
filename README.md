@@ -60,6 +60,8 @@ elérhető az összes felhasználói funkció. A kvízek kategóriák szerint va
 ## KanBan Board
 - [Trello](https://trello.com/b/SPU09TlD/szfm-csk2-kanban-board)
 
+## PlantUML Observer Observee ábra
+- [PlantUML kód és ábra](/documentation/PlantUml.md)
 
 ## Github Link
 
