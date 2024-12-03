@@ -1,31 +1,56 @@
 
 # SZFM Kvízoldal Project
+
+## Projekt indítása
+
+Elszőr, futtasd a webszervert:
+
+```bash
+npm run build
+npm start
+```
+Nyisd meg a [http://localhost:3000](http://localhost:3000) a böngésződben.
+
+
+Majd futtatsd a Pocketbase-t az alábbi paranccsal
+```bash
+.\pocketbase serve
+```
+
+Nyisd meg a böngésződben a pocketbase admin UI-t
+[http://127.0.0.1:8090/_/](http://127.0.0.1:8090/_/)
+
+# Dokumentáció
+## Követelmény Specifikáció
+- #### Áttekintés
 Az alkalmazás célja játékos módú iskolai tanulmányokat kiegészítő tanulási lehetőség kvízeken keresztül.  Az alkalmazás rendelkezik Webes felülettel, amelyen keresztül
 elérhető az összes felhasználói funkció. A kvízek kategóriák szerint vannak csoportosítva, melyeket a felhasználók szabadon megoldhatnak. Ezek megoldására idő
 és pontosság alapján pontszámot kapnak a felhasználók.  A kvízekhez eredménytábla is tartozik, ahova felkerülnek a legjobban teljesítő felhasználók és eredményeik. Lehetőség van kvízek létrehozására is bármely felhasználó által.
 
-
-
-## Documentation
-- [User Story](/documentation/UserStory.md)
 - [Jelenlegi helyzet](/documentation/JelenlegiHelyzet.md)
+
+
 - [Vágyálom rendszer](/documentation/VagyalomRendszer.md)
 - [Funkcionális követelmények](/documentation/FunkcionalisKovetelmenyek.md)
-- [**Követelménylista FIXMElink**](https://docs.google.com/document/d/1HVqWFxbzCuthdtFXfPDTdrWRvUNI0WBZ4gA-M4g6DtM/edit?fbclid=IwY2xjawGwc45leHRuA2FlbQIxMAABHaHC_qAbnsifYzwqn7j_5N8knamT9Ncc00NDhUSFiygFbkGvX0muXltshQ_aem_rh4SNp0TCoiBWz4wgJJMyw&tab=t.0)
+- [Rendszerre vonatkozó törvények, szabványok, ajánlások](/documentation/TorvenyekSzabvanyokAjanlasok.md)
+- [Jelenlegi üzleti folyamatok modellje](/documentation/JelenlegiUzletiFolyamatokModellje.md)
+- [Követelménylista ](/documentation//Kovetelmenylista.md)
 - [Szabad riport](/documentation/SzabadRiport.md)
 - [Irányított riport](/documentation/IrarnyitottRiport.md)
-- [Minutes of meetings](/documentation/MinutesOfMeetings.md)
-- [Rendszerterv](/documentation/Rendszerterv.md)
 
-## Figma tervek
-### Bejelentkező oldal:
-![Login oldal](/documentation//figmaDesigns/Login.jpg "Login")
-### Regisztráló oldal:
-![Register oldal](/documentation//figmaDesigns/Register.jpg "Register")
-### Fő oldal:
-![Fő oldal](/documentation//figmaDesigns/Fooldal.png "Fo")
-### Kitöltő oldal:
-![Kitolto oldal](/documentation//figmaDesigns/Kitolto.png "Kitolto")
+## Funkcionális Specifikáció
+- [User Story](/documentation/UserStory.md)
+- [Rendszerterv](/documentation/Rendszerterv.md)
+- [Képernyő tervek](/documentation/Kepernyotervek.md)
+- [Use Case Ábra](/documentation/Usecase.md)
+- [Adatbázis Terv](/documentation//AdatbazisStruktura.md)
+- [Minutes of meetings](/documentation/MinutesOfMeetings.md)
+
+## Figma Links
+- [Login](https://www.figma.com/proto/HZceAZjbEJ74k7ruRHOFkr/Login?node-id=0-1&t=vne3hacnIJxAREPG-1)
+- [Signup](https://www.figma.com/proto/HZceAZjbEJ74k7ruRHOFkr/Login?node-id=4-10&t=akJb23WfnjgB0Yji-1)
+- [Fő oldal](https://www.figma.com/proto/EAczEucAD3LXRYjv0El45o/Kv%C3%ADzoldal?node-id=15-25&t=ThqtxZmHVYgSmY2F-1)
+
 ## KanBan Board
 - [Trello](https://trello.com/b/SPU09TlD/szfm-csk2-kanban-board)
 
