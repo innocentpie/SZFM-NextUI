@@ -165,13 +165,6 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
 
       const createdQuiz = await pb.collection('quizzes').create(quizData);
 
-      const leaderboardData = {
-        quiz_id: createdQuiz.id,
-        players_and_scores: JSON.stringify([]),
-      };
-
-      await pb.collection('leaderboards').create(leaderboardData);
-
       alert('Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.');
       clearQuiz();
       onClose();
