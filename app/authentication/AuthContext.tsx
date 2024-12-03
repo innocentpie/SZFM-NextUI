@@ -41,6 +41,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         } catch (error) {
           console.error('Hiba a felhasználó frissítésekor:', error);
           setUser(null);
+          logout();
         }
       }
       setLoading(false);
