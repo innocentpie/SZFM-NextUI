@@ -163,10 +163,8 @@ const RegisterPage: React.FC = () => {
                     value={password}
                     isInvalid={doPasswordsMatch || isShortPassword}
                     errorMessage={
-                      doPasswordsMatch
-                        ? "A két jelszó nem egyezik"
-                        : isShortPassword
-                        ? "A jelszónak legalább 5 karakter hosszúnak kell lennie"
+                      isShortPassword ? 
+                        "A jelszónak legalább 5 karakter hosszúnak kell lennie"
                         : ""
                     }
                     color={(doPasswordsMatch || isShortPassword) ? "danger" : "default"}
@@ -192,11 +190,7 @@ const RegisterPage: React.FC = () => {
                     isInvalid={doPasswordsMatch || isShortPassword}
                     color={(doPasswordsMatch || isShortPassword) ? "danger" : "default"}
                     errorMessage={
-                      doPasswordsMatch
-                        ? "A két jelszó nem egyezik"
-                        : isShortPassword
-                        ? "A jelszónak legalább 5 karakter hosszúnak kell lennie"
-                        : ""
+                      doPasswordsMatch ? "A két jelszó nem egyezik" : ""
                     }
                     endContent={
                       <button className="focus:outline-none" type="button" onClick={toggleVisibility2} aria-label="toggle password visibility">
