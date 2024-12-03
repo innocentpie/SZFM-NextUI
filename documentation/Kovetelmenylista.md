@@ -11,8 +11,6 @@
 | Felület | K6 | Kvíz kitöltő oldal  | 1.0 | Több kérdésből áll, itt választja ki a felhasználó a válaszok közül az általa helyesnek gondolt megoldást, egy kérdésre maximum |
 | Statisztika | K7 | Toplista | 1.0 | Egy lista, az adott kvíz esetén elért legtöbb pontot elért felhasználókról. |
 | Felület | K8 | Főoldal felülete | 1.0 | Tartalmazza az első n lekért kvíz kérdéssort az adatbázisból, amit ki lehet tölteni. Tartalmaz egy keresősávot, amiben kvíz kódja vagy kategóriája alapján lehet keresni. |
-| Felület | K9 | Kvíz értékelő | 1.0 | A kvízek kitöltése után lehet értékelni egy 1-5-ig terjedő skálán a kvízt.  |
-| Felület | K10 | Kvíz kereső | 1.0 | Az elérhető kvízek között kategóra vagy kód alapján lehet keresni a főoldalról elérhető menüpontban. | 
-| Felület | K11 | 1v1 kvíz kitölő oldal | 1.0 | Versenyezhetünk másokkal a kvíz kitöltése során, a végső nyertes az, akinek a legtöbb pontja van. | 
+| Felület | K9 | Kvíz kereső | 1.0 | Az elérhető kvízek között kategóra vagy kód alapján lehet keresni a főoldalról elérhető menüpontban. | 
 
 ### [Back to README](/README.md)
