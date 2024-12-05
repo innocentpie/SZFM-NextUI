@@ -20,6 +20,7 @@ import pb from '../authentication/PocketBaseClient';
 import * as icons from '../assets/SvgIcons';
 import styles from './CreateQuizModal.module.css';
 import { MdiPlus } from '../assets/SvgIcons';
+import { Bounce, toast } from 'react-toastify';
 
 interface Quiz {
   id: string;
@@ -123,6 +124,39 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     }
   }, [searchTerm, quizzes, verifiedQuizIds]);
 
+  const WarningOptions= {
+    //position: "top-center", 
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    transition: Bounce,
+
+  }
+  const SuccesOptions = {
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    transition: Bounce,
+  }
+  const ErrorOptions = {
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    transition: Bounce,
+  }
+
   const handleVerifyQuiz = async (quizId: string) => {
     if (verifiedQuizIds.includes(quizId)) return;
     try {
@@ -131,7 +165,8 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       setVerifiedQuizIds((prev) => [...prev, quizId]);
     } catch (error) {
       console.error('Verify error:', error);
-      alert('Hiba történt a kvíz hitelesítésekor.');
+      //alert('Hiba történt a kvíz hitelesítésekor.');
+      toast.error("Hiba történt a kvíz hitelesítésekor.",ErrorOptions)
     }
   };
 
@@ -144,7 +179,8 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       setVerifiedQuizIds((prev) => prev.filter((id) => id !== quizId));
     } catch (error) {
       console.error('Unverify error:', error);
-      alert('Hiba történt a kvíz hitelesítésének visszavonásakor.');
+      //alert('Hiba történt a kvíz hitelesítésének visszavonásakor.');
+      toast.error("Hiba történt a kvíz hitelesítésének visszavonásakor.",ErrorOptions)
     }
   };
 
@@ -179,23 +215,29 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
 
   const handleEditSubmit = async () => {
     if (!editingQuiz || !category || !difficulty) {
-      alert('Kérjük, töltsd ki az összes mezőt!');
+      //alert('Kérjük, töltsd ki az összes mezőt!');
+      toast.warn("Kérjük, töltsd ki az összes kötelező mezőt.",WarningOptions)
+
       return;
     }
 
     for (let i = 0; i < questions.length; i++) {
       const answerArray = answers[i].split(';').map(ans => ans.trim());
+      let numberOfQuestions = i+1;
       if (answerArray.length < 1 || answerArray.length > 4) {
-        alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
+        //alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
+        toast.warn( "A(z) "  + numberOfQuestions +". kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.",WarningOptions)
         return;
       }
       if (!answerArray.includes(correctAnswers[i].trim())) {
-        alert(`A(z) ${i + 1}. kérdéshez megadott helyes válasz nem szerepel a válaszok között.`);
+        //alert(`A(z) ${i + 1}. kérdéshez megadott helyes válasz nem szerepel a válaszok között.`);
+        toast.warn( "A(z) "  + numberOfQuestions +". kérdéshez megadott helyes válasz nem szerepel a válaszok között.",WarningOptions)
         return;
       }
       const correctAnswersCount = answerArray.filter(ans => ans === correctAnswers[i].trim()).length;
       if (correctAnswersCount !== 1) {
-        alert(`A(z) ${i + 1}. kérdéshez pontosan egy helyes választ kell megadni.`);
+        //alert(`A(z) ${i + 1}. kérdéshez pontosan egy helyes választ kell megadni.`);
+        toast.warn( "A(z) "  + numberOfQuestions +". kérdéshez pontosan egy helyes választ kell megadni.",WarningOptions)
         return;
       }
     }
@@ -219,10 +261,13 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       handleUnverifyQuiz(editingQuiz.id);
       setHasModified(true);
       setEditingQuiz(null);
-      alert('Kvíz sikeresen frissítve! Adminisztrátor jóváhagyásra vár.');
+      //alert('Kvíz sikeresen frissítve! Adminisztrátor jóváhagyásra vár.');
+      toast.success("Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.",SuccesOptions)
     } catch (error) {
       console.error('Update quiz error:', error);
-      alert('Hiba történt a kvíz frissítésekor.');
+      //alert('Hiba történt a kvíz frissítésekor.');
+      toast.error("Hiba történt a kvíz létrehozása során.",ErrorOptions)
+
     }
   };
 
@@ -262,10 +307,12 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       await pb.collection('quizzes').delete(quizId);
       setHasModified(true);
       setQuizzes(quizzes.filter((quiz) => quiz.id !== quizId));
-      alert('Kvíz sikeresen törölve!');
+      //alert('Kvíz sikeresen törölve!');
+      toast.success("Kvíz sikeresen törölve!",SuccesOptions)
     } catch (error) {
       console.error('Delete quiz error:', error);
-      alert('Hiba történt a kvíz törlésekor.');
+      //alert('Hiba történt a kvíz törlésekor.');
+      toast.error("Hiba történt a kvíz törlésekor.",ErrorOptions)
     }
   };
 
