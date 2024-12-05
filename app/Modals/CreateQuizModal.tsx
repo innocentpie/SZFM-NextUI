@@ -20,6 +20,12 @@ import { MdiPlus } from '../assets/SvgIcons';
 import styles from './CreateQuizModal.module.css';
 import * as icons from '../assets/SvgIcons';
 
+import { Bounce, ToastContainer, toast } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
+import { Toast } from 'react-toastify/dist/components/Toast';
+
+
 interface CreateQuizModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -109,6 +115,41 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
       setCorrectAnswer(newCorrectAnswer);
     }
   };
+  const WarningOptions= {
+    //position: "top-center", 
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    transition: Bounce,
+
+  }
+  const SuccesOptions = {
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    transition: Bounce,
+  }
+  const ErrorOptions = {
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    transition: Bounce,
+  }
+  
+  
+  
 
   const handleSubmit = async () => {
     const combinedQuestions = questions.map((question, index) => ({
@@ -118,29 +159,36 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
     }));
 
     if (!quizDescription || !category || !difficulty) {
-      alert('Kérjük, töltsd ki az összes kötelező mezőt.');
-      return;
+      //alert('Kérjük, töltsd ki az összes kötelező mezőt.');
+      
+       toast.warn("Kérjük, töltsd ki az összes kötelező mezőt.",WarningOptions)
+       return;
     }
 
     for (let i = 0; i < combinedQuestions.length; i++) {
       const q = combinedQuestions[i];
+      let numberOfQuestions = i+1;
       if (!q.question_text || !q.answers || !q.correct_answer) {
-        alert(`Kérjük, töltsd ki az összes mezőt a(z) ${i + 1}. kérdéshez.`);
+        //alert(`Kérjük, töltsd ki az összes mezőt a(z) ${i + 1}. kérdéshez.`);
+        toast.warn( "Kérjük, töltsd ki az összes mezőt a(z) "  + numberOfQuestions +". kérdéshez.",WarningOptions)
         return;
       }
 
       const answersArray = q.answers.split(';').map(ans => ans.trim());
       if (answersArray.length < 1 || answersArray.length > 4) {
-        alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
+        //alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
+        toast.warn( "A(z) "  + numberOfQuestions +". kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.",WarningOptions)
         return;
       }
       if (!answersArray.includes(q.correct_answer.trim())) {
-        alert(`A(z) ${i + 1}. kérdéshez megadott helyes válasz nem szerepel a válaszok között.`);
+        //alert(`A(z) ${i + 1}. kérdéshez megadott helyes válasz nem szerepel a válaszok között.`);
+        toast.warn( "A(z) "  + numberOfQuestions +". kérdéshez megadott helyes válasz nem szerepel a válaszok között.",WarningOptions)
         return;
       }
       const correctAnswersCount = answersArray.filter(ans => ans === q.correct_answer.trim()).length;
       if (correctAnswersCount !== 1) {
-        alert(`A(z) ${i + 1}. kérdéshez pontosan egy helyes választ kell megadni.`);
+        //alert(`A(z) ${i + 1}. kérdéshez pontosan egy helyes választ kell megadni.`);
+        toast.warn( "A(z) "  + numberOfQuestions +". kérdéshez pontosan egy helyes választ kell megadni.",WarningOptions)
         return;
       }
     }
@@ -165,12 +213,14 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
 
       const createdQuiz = await pb.collection('quizzes').create(quizData);
 
-      alert('Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.');
+      //alert('Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.');
+      toast.success("Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.",SuccesOptions)
       clearQuiz();
       onClose();
     } catch (error) {
       console.error('Kvíz létrehozási hiba:', error);
-      alert('Hiba történt a kvíz létrehozása során.');
+      //alert('Hiba történt a kvíz létrehozása során.');
+      toast.error("Hiba történt a kvíz létrehozása során.",ErrorOptions)
     } finally {
       setIsSubmitting(false);
     }
@@ -182,11 +232,25 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
   }
 
   return (
+    
     <Modal isOpen={isOpen} onClose={modalOnClose} closeButton className={styles.modalWindow}>
+      <ToastContainer stacked limit={5}
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        />
       <ModalContent className={styles.modalContent}>
         <ModalHeader>Létrehozás</ModalHeader>
         <ModalBody className={styles.modalBody}>
           <div className={styles.formGroup}>
+            
             <label htmlFor="quiz-description">Kvíz leírása (min. 10, max. 400 karakter):</label>
             <Textarea
               id="quiz-description"

@@ -41,4 +41,16 @@
 - NextUI-os project commitolva
 - Quiz oldal kártya design
 - NextUI kártyák használata inkább
+
+### 2024.12.03
+- Öszeültünk a dokumentációt befejezni
+- Hozzáadtunk futtatási tervet
+- Karbantartási terv
+- Teszt terv
+- Követelmény listát javítottuk
+- Hozzáadtunk projekt tervet
+- Megcsináltuk az Observer -> Observee ábrát Plant UML_el
+
+- Toast segítségével javítja Peti a Hibaüzeneteket
+
 ### [Back to README](/README.md)
