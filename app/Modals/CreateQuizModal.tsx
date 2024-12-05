@@ -216,6 +216,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
       //alert('Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.');
       toast.success("Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.",SuccesOptions)
       clearQuiz();
+      await new Promise(f => setTimeout(f, 2500));
       onClose();
     } catch (error) {
       console.error('Kvíz létrehozási hiba:', error);

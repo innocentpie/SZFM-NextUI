@@ -56,6 +56,16 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
     theme: "colored",
     transition: Bounce,
   }
+  const SuccesOptions = {
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    transition: Bounce,
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -64,6 +74,10 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
 
     try {
       await updateProfile({ username, profile_picture: selectedImageKey });
+      
+      
+      toast.success("Sikeres szerkesztés",SuccesOptions)
+      await new Promise(f => setTimeout(f, 1000));
       onClose();
     } catch (error) {
       console.error("Profil szerkesztési hiba:", error);
