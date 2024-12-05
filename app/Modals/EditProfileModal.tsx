@@ -13,6 +13,7 @@ import {
 import { useAuth } from "../authentication/AuthContext";
 import Image from "next/image";
 import avatarImages from '../assets/avatarImages';
+import { Bounce, toast, ToastContainer } from "react-toastify";
 
 const predefinedImageKeys = [
   "avatar1",
@@ -45,6 +46,16 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
     setSelectedImageKey(imageKey);
   };
 
+  const ErrorOptions = {
+    autoClose: 3000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true,
+    progress: undefined,
+    theme: "colored",
+    transition: Bounce,
+  }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -56,7 +67,8 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
       onClose();
     } catch (error) {
       console.error("Profil szerkesztési hiba:", error);
-      alert("Hiba történt a profil szerkesztésekor. Lehet, hogy létezik már azonos névvel felhasználó.");
+      //alert("Hiba történt a profil szerkesztésekor. Lehet, hogy létezik már azonos névvel felhasználó.");
+      toast.error("Hiba történt a profil szerkesztésekor.\nLehet, hogy létezik már azonos névvel felhasználó.",ErrorOptions)
     } finally {
       setIsSubmitting(false);
     }
@@ -64,6 +76,18 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} backdrop="opaque">
+      <ToastContainer stacked limit={5}
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored"
+        />
       <ModalContent>
         <form onSubmit={handleSubmit}>
           <ModalHeader>Profil Szerkesztése</ModalHeader>
