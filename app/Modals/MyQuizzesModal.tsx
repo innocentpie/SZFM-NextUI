@@ -20,7 +20,7 @@ import pb from '../authentication/PocketBaseClient';
 import * as icons from '../assets/SvgIcons';
 import styles from './CreateQuizModal.module.css';
 import { MdiPlus } from '../assets/SvgIcons';
-import { Bounce, toast } from 'react-toastify';
+import { Bounce, toast, ToastContainer } from 'react-toastify';
 
 interface Quiz {
   id: string;
@@ -262,11 +262,11 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       setHasModified(true);
       setEditingQuiz(null);
       //alert('Kvíz sikeresen frissítve! Adminisztrátor jóváhagyásra vár.');
-      toast.success("Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.",SuccesOptions)
+      toast.success("Kvíz sikeresen frissítve! Adminisztrátor jóváhagyásra vár.",SuccesOptions)
     } catch (error) {
       console.error('Update quiz error:', error);
       //alert('Hiba történt a kvíz frissítésekor.');
-      toast.error("Hiba történt a kvíz létrehozása során.",ErrorOptions)
+      toast.error("Hiba történt a kvíz frissítésekor.",ErrorOptions)
 
     }
   };
@@ -554,6 +554,18 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
         </Modal>
       )}
       <Modal isOpen={isOpen} onClose={handleModalClose} closeButton style={{ top: '1.5rem', position: 'absolute' }}>
+      <ToastContainer stacked limit={5}
+            position="top-center"
+            autoClose={3000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+            />
         <ModalContent>
           <ModalHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span>Kvízek</span>
