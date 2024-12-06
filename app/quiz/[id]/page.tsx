@@ -50,7 +50,6 @@ const formatMSToLabel = (ms : number) => {
 }
 
 let correctAnswerCount = 0;
-let totalScore = 0;
 
 export default function QuizPage({ params }: { params: {id: string }} ){
   const { user, loading } = useAuth();
@@ -63,7 +62,11 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const [questionIndex, setQuestionIdex] = useState<number>(0);
   const [timerData, setTimerData] = useState<TimerData>();
   const [shouldStartTimeout, setShouldStartTimeout] = useState<boolean>(true);
-  const runningTimeout = useRef<any | null>(null);
+  const [totalScore, setTotalScore] = useState<number>(0);
+  
+  const runningTimeout = useRef<NodeJS.Timeout | null>(null);
+
+
   useEffect(() => {
     if (user) {
       loadPage();
@@ -150,7 +153,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
         
         spentTimePct = Math.pow(spentTimePct, 0.5);
         let score = Math.round(spentTimePct * 100);
-        totalScore += score;
+        setTotalScore(score + totalScore);
       }
       setSelectedAnswer(answerIndex);
     }
@@ -282,11 +285,11 @@ export default function QuizPage({ params }: { params: {id: string }} ){
             </CardBody>
           </Card>
         </div>
-        <div className='side-col'>
+        <div className='side-col flex flex-col gap-4'>
           <Card className='clock-card'>
             <CardBody>
               <div className='clock-body'>
-                <p className='text-xl text-center'>Kérdésre hátralévő idő</p>
+                <p className='text-xl text-center font-bold'>Kérdésre hátralévő idő</p>
                 <div>
                   <CircularProgress
                     aria-label="Loading..."
@@ -302,6 +305,14 @@ export default function QuizPage({ params }: { params: {id: string }} ){
                     label={timerData?.timeMS != null ? formatMSToLabel(timerData.timeMS) : formatMSToLabel(timeLimitMS)}
                   />
                 </div>
+              </div>
+            </CardBody>
+          </Card>
+          <Card className='clock-card'>
+            <CardBody>
+              <div className='flex flex-col gap-0.5'>
+                <p className='text-xl text-center font-bold'>Pontszám</p>
+                <p className='text-xl text-center'>{totalScore}</p>
               </div>
             </CardBody>
           </Card>
