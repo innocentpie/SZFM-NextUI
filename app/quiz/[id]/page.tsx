@@ -8,7 +8,7 @@ import pb from '@/app/authentication/PocketBaseClient';
 import { categories } from '../categories';
 import headerStyles from '@app/header/Header.module.css';
 import Header from '@/app/header/Header';
-import { Card, CardBody } from '@nextui-org/card';
+import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import './quizidpage.css';
 import { Button } from '@nextui-org/button';
 import { CircularProgress } from '@nextui-org/react';
@@ -32,12 +32,9 @@ const getQuiz = async (filter : string) => {
 
 let runningTimeout : NodeJS.Timeout | null = null;
 let shouldStartTimeout : boolean = true;
-function startTimer(startTimeMS : number,
-  startDelayMs : number, 
+function startTimer(startTimeMS : number, 
   onTimerTick : (currentTime: number) => void,
   onTimerOver : () => void) {
-    
-  setTimeout(() => {
     let prevTimeMS = Date.now();
     let timerCurrentMS = startTimeMS;
 
@@ -61,8 +58,7 @@ function startTimer(startTimeMS : number,
         
         onTimerOver();
       }
-    }, 10)
-  }, startDelayMs)
+    }, 10);
 }
 
 class TimerData {
@@ -84,6 +80,7 @@ const formatMSToLabel = (ms : number) => {
 }
 
 let correctAnswerCount = 0;
+let totalScore = 0;
 
 export default function QuizPage({ params }: { params: {id: string }} ){
   const { user, loading } = useAuth();
@@ -136,23 +133,44 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const correct_answers = JSON.parse(quiz.correct_answers);
   const timeLimitMS = 10000;
 
-  const submitAnswer = (answerIndex : number | null) => {
+  const submitAnswer = async (answerIndex : number | null) => {
+    if(runningTimeout != null){
+      clearInterval(runningTimeout);
+      runningTimeout = null;
+    }
+
     if(answerIndex != null) {
-      if(correct_answers[questionIndex] == answers[questionIndex][answerIndex])
+      if(correct_answers[questionIndex] == answers[questionIndex][answerIndex]) {
         correctAnswerCount += 1;
+        let spentTimePct = 0;
+        if(timerData != null)
+          spentTimePct = (timerData.timeMS / timeLimitMS);
+        
+        spentTimePct = Math.pow(spentTimePct, 0.5);
+        let score = Math.round(spentTimePct * 100);
+        totalScore += score;
+        console.log(score);
+      }
     }
 
     if(questions.length > questionIndex + 1) {
       shouldStartTimeout = true;
-      if(runningTimeout != null){
-        clearInterval(runningTimeout);
-        runningTimeout = null;
-      }
       setQuestionIdex(questionIndex + 1);
     }
     else{
-      setQuizFinished(true);
+      endQuiz();
+      await pb.collection('scores').create({
+        "quiz_id": quiz?.id,
+        "user_id": user.id,
+        "score": totalScore,
+        "correct_answers": correctAnswerCount,
+      })
     }
+  }
+
+  const endQuiz = () => {
+    setQuizFinished(true);
+
   }
 
 
@@ -164,7 +182,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
     iTimerD.timerProgressPct = 100;
     setTimerData(iTimerD);
 
-    startTimer(timeLimitMS, 1000,
+    startTimer(timeLimitMS,
       (currentTime) => {
         let pct = (currentTime / timeLimitMS) * 100;
         let d : TimerData = new TimerData();
@@ -194,9 +212,15 @@ export default function QuizPage({ params }: { params: {id: string }} ){
       <div className='content-div'>
       <div className='center-col'>
           <Card className='main-card'>
+            <CardHeader className='justify-center'>
+              <p className='text-xl font-bold text-center'>Gratulálunk!</p>
+            </CardHeader>
             <CardBody>
               <div className='card-body'>
-                <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount}</p>
+                <div className='flex justify-center items-center flex-col'>
+                  <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount}</p>
+                  <p className='text-xl font-bold text-center'>Pontszám: {totalScore}</p>
+                </div>
               </div>
             </CardBody>
           </Card>
