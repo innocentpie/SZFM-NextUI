@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, Suspense } from 'react';
+import React, { useState, useEffect, Suspense, useRef } from 'react';
 import { useAuth } from '../authentication/AuthContext';
 import './quizpage.css';
 import Header from "../header/Header";
@@ -9,6 +9,7 @@ import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Divider, Paginati
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { categories } from './categories';
+import LeaderBoardModal from '@/app/Modals/LeaderBoardModal'
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto';
 
@@ -46,9 +47,10 @@ function QuizContent({ user }: QuizContentProps) {
   const [quizLoading, setQuizLoading] = useState<boolean>(true);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
-
+  const [isLeaderBordOpen, setisLeaderBordOpen] = useState(false);
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
+  const selectedQuizId = useRef<string | null>(null);
 
   const loadQuizzes = async (page: number = 1, searchQuery: string = '') => {
     try {
@@ -99,9 +101,28 @@ function QuizContent({ user }: QuizContentProps) {
     }
   };
 
+
+  const handleLeaderClick = (id:string) => {
+    selectedQuizId.current = id;
+    setisLeaderBordOpen(true);
+    
+  };
+
+  const handleCloseLeaderBoard = () => {
+    setisLeaderBordOpen(false);
+  }
+  
   return (
     <div className='quiz-page-container'>
       <div className='secondary-container'>
+        {
+          <LeaderBoardModal
+            isOpen={isLeaderBordOpen}
+            quiz_id={selectedQuizId.current}
+            onClose={handleCloseLeaderBoard}
+            
+          />
+        }
         {quizzes.map((quiz) => (
           <Card className='m-2 quiz-card' shadow="sm" key={quiz.id}>
             <CardHeader
@@ -144,7 +165,7 @@ function QuizContent({ user }: QuizContentProps) {
                 </Link>
               </div>
               <div>
-                <Button className='ml-1' isDisabled color='secondary'>
+                <Button className='ml-1'  color='secondary' onClick={()=>handleLeaderClick(quiz.id)}>
                   <span>Ranglista (wip)</span>
                 </Button>
               </div>
