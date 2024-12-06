@@ -124,7 +124,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
         if(timerCurrentMS < 0) {
           timerCurrentMS = 0;
         }
-        console.log(runningTimeout.current);
+        
         onTimerTick(timerCurrentMS);
   
         if(timerCurrentMS <= 0) {
