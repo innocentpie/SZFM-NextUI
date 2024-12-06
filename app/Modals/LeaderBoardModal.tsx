@@ -1,9 +1,12 @@
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Divider } from "@nextui-org/react";
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell} from "@nextui-org/react";
+import pb from '../authentication/PocketBaseClient';
+import PocketBase from 'pocketbase';
+import { stringify } from 'querystring';
 
 interface Quiz {
   id: string;
@@ -27,23 +30,41 @@ interface LeaderBoardModalProps {
 }
 
 const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, onClose }) => {
+  const [loading, setLoading] = useState<boolean>(false);
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
-  console.log(quiz_id)
-
-  const Quize_c = ({ quizCode }: any) => {
-    
+  const pb = new PocketBase('http://127.0.0.1:8090');
+  const Quize_c = ({ quizCode = fetchQuizzes}: any) => {
+    console.log(quizCode)
     return (
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-      
-        <span>{quizCode}</span>
         
+        <span>{quizCode}</span>
+          
       </div>
     );
   }; 
-  
+
+    const fetchQuizzes = async () => {
+      
+      setLoading(true);
+      try {
+        
+
+        const record = await pb.collection('quizzes').getOne<Quiz>(quiz_id as string, {
+          expand: 'relField1,relField2.subRelField'});
+          return record
+        
+      } catch (error) {
+        console.error('Fetch error:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    
     
     return (
+      
       <>
         
         <Modal 
@@ -74,8 +95,8 @@ const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, on
           <ModalContent>
             {() => (
               <>
-                <ModalHeader className="flex flex-col gap-1">Legjobb eredmények: </ModalHeader>
-                {/* <Quize_c quizCode={quiz.quiz_code} /> */}
+                <ModalHeader className="flex flex-col gap-1">Legjobb eredmények: <Quize_c  /> </ModalHeader>
+                 
                 <ModalBody>
                 <Table removeWrapper aria-label="Example static collection table">
                   <TableHeader>

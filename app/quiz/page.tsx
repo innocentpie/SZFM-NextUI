@@ -165,7 +165,7 @@ function QuizContent({ user }: QuizContentProps) {
                 </Button>
               </div>
               <div>
-                <Button className='ml-1'  color='secondary' onClick={()=>handleLeaderClick(quiz.id)}>
+                <Button className='ml-1'  color='secondary' onClick={()=>handleLeaderClick(quiz.quiz_id)}>
                   <span>Ranglista (wip)</span>
                 </Button>
               </div>
