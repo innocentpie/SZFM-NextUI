@@ -12,6 +12,7 @@ import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import './quizidpage.css';
 import { Button } from '@nextui-org/button';
 import { CircularProgress } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
@@ -84,6 +85,7 @@ let totalScore = 0;
 
 export default function QuizPage({ params }: { params: {id: string }} ){
   const { user, loading } = useAuth();
+  const router = useRouter();
   const [quizLoading, setQuizLoading] = useState<boolean>(true);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
   const [quiz, setQuiz] = useState<any>(null);
@@ -101,12 +103,10 @@ export default function QuizPage({ params }: { params: {id: string }} ){
 
       let filter = `id~"${id}"`
       let quiz = await getQuiz(filter);
-      console.log(quiz);
       if(quiz == null){
         filter = `quiz_code~"${id}"`
         quiz = await getQuiz(filter);
       }
-      console.log(quiz);
 
       setQuiz(quiz);
     }
@@ -149,7 +149,6 @@ export default function QuizPage({ params }: { params: {id: string }} ){
         spentTimePct = Math.pow(spentTimePct, 0.5);
         let score = Math.round(spentTimePct * 100);
         totalScore += score;
-        console.log(score);
       }
     }
 
@@ -171,6 +170,10 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const endQuiz = () => {
     setQuizFinished(true);
 
+  }
+
+  const onBackButton = () => {
+    router.push('/quiz');
   }
 
 
@@ -206,7 +209,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
       
   return(
     <>
-    <Header quizMainHeaderMode={false}/>
+    <Header quizMainHeaderMode={false} backButton={onBackButton}/>
     {quizFinished &&
     <div className='outer-content-div'>
       <div className='content-div'>

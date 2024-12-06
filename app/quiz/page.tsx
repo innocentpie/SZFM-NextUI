@@ -27,7 +27,7 @@ export default function QuizPage() {
 
   return (
     <>
-      <Header quizMainHeaderMode={true} />
+      <Header quizMainHeaderMode={true} backButton={null} />
       <div className='main-container'>
         <Suspense fallback={<div><h1><p>Betöltés...</p></h1></div>}>
           <QuizContent user={user} />

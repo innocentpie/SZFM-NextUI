@@ -11,8 +11,9 @@ import EditProfileModal from '../Modals/EditProfileModal';
 import CreateQuizModal from '../Modals/CreateQuizModal';
 import avatarImages from '../assets/avatarImages';
 import { useRouter } from 'next/navigation';
+import {BackIcon} from "@/components/BackIcon";
 
-export default function Header({ quizMainHeaderMode }: { quizMainHeaderMode: boolean }) {
+export default function Header({ quizMainHeaderMode, backButton }: { quizMainHeaderMode: boolean, backButton: any | null }) {
   const [isProfileOptionsOpen, setIsProfileOptionsOpen] = useState(false);
   const [isMyQuizzesOpen, setIsMyQuizzesOpen] = useState(false);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -96,6 +97,11 @@ export default function Header({ quizMainHeaderMode }: { quizMainHeaderMode: boo
             <span>Létrehozás</span>
             <MdiPlus />
           </Button>
+        }
+        {backButton != null &&
+        <Button onClick={backButton} className={styles.backButton} isIconOnly variant="faded" aria-label="Vissza">
+          <BackIcon/>
+        </Button>
         }
       </nav>
       <div className={styles.titleContainer}>
