@@ -16,11 +16,18 @@ import { CircularProgress } from '@nextui-org/react';
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
 
-const getQuiz = async (id : string) => {
-  let data = await pb.collection('quizzes').getOne(id, {
-    expand: 'creator',
-  });
-  return data as any;
+const getQuiz = async (filter : string) => {
+  try{
+
+    let data = await pb.collection('quizzes').getFirstListItem(
+      filter,
+      { expand: 'creator', }
+    );
+    return data as any;
+  }
+  catch(error: any){
+    return null;
+  }
 };
 
 let runningTimeout : NodeJS.Timeout | null = null;
@@ -94,7 +101,16 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const loadPage = async () => {
     try{
       let id = (params).id;
-      let quiz = await getQuiz(id);
+
+      let filter = `id~"${id}"`
+      let quiz = await getQuiz(filter);
+      console.log(quiz);
+      if(quiz == null){
+        filter = `quiz_code~"${id}"`
+        quiz = await getQuiz(filter);
+      }
+      console.log(quiz);
+
       setQuiz(quiz);
     }
     catch (error) {

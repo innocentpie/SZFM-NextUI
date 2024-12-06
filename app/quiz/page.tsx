@@ -137,7 +137,7 @@ function QuizContent({ user }: QuizContentProps) {
             </CardBody>
             <CardFooter className='quiz-card-footer'>
               <div>
-                <Link href={`/quiz/${quiz.expand.quiz_id.id}`} passHref>
+                <Link href={`/quiz/${quiz.expand.quiz_id.quiz_code}`} passHref>
                   <Button className='mr-1' color='primary' as="a">
                     <span>Kitöltés (wip)</span>
                   </Button>
