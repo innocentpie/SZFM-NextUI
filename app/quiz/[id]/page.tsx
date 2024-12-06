@@ -1,7 +1,7 @@
 //Work in progress
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/app/authentication/AuthContext';
 import * as icons from '@/app/assets/SvgIcons';
 import pb from '@/app/authentication/PocketBaseClient';
@@ -30,37 +30,6 @@ const getQuiz = async (filter : string) => {
     return null;
   }
 };
-
-let runningTimeout : NodeJS.Timeout | null = null;
-let shouldStartTimeout : boolean = true;
-function startTimer(startTimeMS : number, 
-  onTimerTick : (currentTime: number) => void,
-  onTimerOver : () => void) {
-    let prevTimeMS = Date.now();
-    let timerCurrentMS = startTimeMS;
-
-    runningTimeout = setInterval(function() {
-      let nowMS = Date.now();
-      let diff = nowMS - prevTimeMS;
-      prevTimeMS = nowMS;
-
-      timerCurrentMS -= diff;
-      if(timerCurrentMS < 0) {
-        timerCurrentMS = 0;
-      }
-      
-      onTimerTick(timerCurrentMS);
-
-      if(timerCurrentMS <= 0) {
-        if(runningTimeout != null) {
-          clearInterval(runningTimeout);
-          runningTimeout = null;
-        }
-        
-        onTimerOver();
-      }
-    }, 10);
-}
 
 class TimerData {
   public timerProgressPct : number = 100;
@@ -93,12 +62,14 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const [selectedAnswer, setSelectedAnswer] = useState<number>(-1);
   const [questionIndex, setQuestionIdex] = useState<number>(0);
   const [timerData, setTimerData] = useState<TimerData>();
+  const [shouldStartTimeout, setShouldStartTimeout] = useState<boolean>(true);
+  const runningTimeout = useRef<any | null>(null);
   useEffect(() => {
     if (user) {
       loadPage();
     }
   }, [user]);
-  
+
   const loadPage = async () => {
     try{
       let id = (params).id;
@@ -135,10 +106,39 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const correct_answers = JSON.parse(quiz.correct_answers);
   const timeLimitMS = 10000;
 
+  const startTimer = (startTimeMS : number, 
+    onTimerTick : (currentTime: number) => void,
+    onTimerOver : () => void) => {
+      let prevTimeMS = Date.now();
+      let timerCurrentMS = startTimeMS;
+  
+      let timerId = setInterval(function() {
+        let nowMS = Date.now();
+        let diff = nowMS - prevTimeMS;
+        prevTimeMS = nowMS;
+  
+        timerCurrentMS -= diff;
+        if(timerCurrentMS < 0) {
+          timerCurrentMS = 0;
+        }
+        console.log(runningTimeout.current);
+        onTimerTick(timerCurrentMS);
+  
+        if(timerCurrentMS <= 0) {
+          if(runningTimeout.current != null) {
+            clearInterval(runningTimeout.current);
+            runningTimeout.current = (null);
+            onTimerOver();
+          }
+        }
+      }, 10);
+      runningTimeout.current = (timerId);
+  }
+
   const submitAnswer = async (answerIndex : number | null) => {
-    if(runningTimeout != null){
-      clearInterval(runningTimeout);
-      runningTimeout = null;
+    if(runningTimeout.current != null){
+      clearInterval(runningTimeout.current);
+      runningTimeout.current = (null);
     }
 
     if(answerIndex != null) {
@@ -161,15 +161,15 @@ export default function QuizPage({ params }: { params: {id: string }} ){
       setShowCorrectAnswer(true);
       setTimeout(() => {
         setShowCorrectAnswer(false);
-        shouldStartTimeout = true;
         setQuestionIdex(questionIndex + 1);
+        setShouldStartTimeout(true);
       }, 2000)
     }
     else{
       setShowCorrectAnswer(true);
       setTimeout(async () => {
         setShowCorrectAnswer(false);
-        shouldStartTimeout = false;
+        setShouldStartTimeout(false);
         endQuiz();
         await pb.collection('scores').create({
           "quiz_id": quiz?.id,
@@ -178,8 +178,6 @@ export default function QuizPage({ params }: { params: {id: string }} ){
           "correct_answers": correctAnswerCount,
         })
       }, 2000)
-
-      
     }
   }
 
@@ -193,8 +191,8 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   }
 
 
-  if(runningTimeout == null && shouldStartTimeout){
-    shouldStartTimeout = false;
+  if(runningTimeout.current == null && shouldStartTimeout){
+    setShouldStartTimeout(false);
 
     let iTimerD = new TimerData();
     iTimerD.timeMS = timeLimitMS;
