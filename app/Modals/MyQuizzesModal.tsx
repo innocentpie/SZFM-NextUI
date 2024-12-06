@@ -388,9 +388,10 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
             </Tooltip>
           </div>
         )}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.8rem' }}>
           <strong>Státusz:</strong>
-          {isVerified ? <Tooltip content="Hitelesített" color={"success"}><Button style={{ background: 'transparent' }} disabled={true}><icons.Accept /></Button></Tooltip> : <Tooltip content="Nem elfogadott/Jóváhagyásra vár" key={"danger"} color={"danger"}><Button style={{ background: 'transparent' }} disabled={true}><icons.Deny /></Button></Tooltip>}
+          {isVerified ? <Tooltip content="Hitelesített" color={"success"}><Button style={{ background: 'transparent', padding: 0, display: 'inline', minWidth: 0 }} disabled={true}><icons.Accept /></Button></Tooltip> 
+          : <Tooltip content="Nem elfogadott/Jóváhagyásra vár" key={"danger"} color={"danger"}><Button style={{ background: 'transparent', padding: 0, display: 'inline', minWidth: 0 }} disabled={true}><icons.Deny /></Button></Tooltip>}
         </div>
       </div>
     );

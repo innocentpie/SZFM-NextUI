@@ -113,7 +113,7 @@ export default function Header({ quizMainHeaderMode, backButton }: { quizMainHea
             src={getAvatar()}
             alt="User Avatar"
             onClick={handleAvatarClick}
-            style={{ cursor: 'pointer', borderRadius: '50%', border: '0.15rem solid #000', marginRight: '0.5rem' }}
+            style={{ minWidth:65, cursor: 'pointer', borderRadius: '50%', border: '0.15rem solid #000', marginRight: '0.5rem' }}
             height={65}
             width={65}
           />
