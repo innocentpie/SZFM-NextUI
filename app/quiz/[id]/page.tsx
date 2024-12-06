@@ -241,6 +241,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
           <Card className='main-card'>
             <CardBody>
               <div className='card-body'>
+                <p className='text-3xl font-bold text-center'>{questionIndex + 1}. kérdés</p>
                 <p className='text-xl font-bold text-center'>{questions[questionIndex]}</p>
                 <div className='answers-div'>
                   {answers[questionIndex].map((ans : string, index : number) => (
