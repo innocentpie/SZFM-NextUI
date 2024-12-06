@@ -1,7 +1,7 @@
 //Work in progress
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/app/authentication/AuthContext';
 import * as icons from '@/app/assets/SvgIcons';
 import pb from '@/app/authentication/PocketBaseClient';
@@ -12,6 +12,7 @@ import { Card, CardBody, CardHeader } from '@nextui-org/card';
 import './quizidpage.css';
 import { Button } from '@nextui-org/button';
 import { CircularProgress } from '@nextui-org/react';
+import { useRouter } from 'next/navigation';
 
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
@@ -29,37 +30,6 @@ const getQuiz = async (filter : string) => {
     return null;
   }
 };
-
-let runningTimeout : NodeJS.Timeout | null = null;
-let shouldStartTimeout : boolean = true;
-function startTimer(startTimeMS : number, 
-  onTimerTick : (currentTime: number) => void,
-  onTimerOver : () => void) {
-    let prevTimeMS = Date.now();
-    let timerCurrentMS = startTimeMS;
-
-    runningTimeout = setInterval(function() {
-      let nowMS = Date.now();
-      let diff = nowMS - prevTimeMS;
-      prevTimeMS = nowMS;
-
-      timerCurrentMS -= diff;
-      if(timerCurrentMS < 0) {
-        timerCurrentMS = 0;
-      }
-      
-      onTimerTick(timerCurrentMS);
-
-      if(timerCurrentMS <= 0) {
-        if(runningTimeout != null) {
-          clearInterval(runningTimeout);
-          runningTimeout = null;
-        }
-        
-        onTimerOver();
-      }
-    }, 10);
-}
 
 class TimerData {
   public timerProgressPct : number = 100;
@@ -79,34 +49,40 @@ const formatMSToLabel = (ms : number) => {
   return formatted;
 }
 
-let correctAnswerCount = 0;
-let totalScore = 0;
 
 export default function QuizPage({ params }: { params: {id: string }} ){
   const { user, loading } = useAuth();
+  const router = useRouter();
   const [quizLoading, setQuizLoading] = useState<boolean>(true);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
   const [quiz, setQuiz] = useState<any>(null);
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState<boolean>(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<number>(-1);
   const [questionIndex, setQuestionIdex] = useState<number>(0);
   const [timerData, setTimerData] = useState<TimerData>();
+  const [shouldStartTimeout, setShouldStartTimeout] = useState<boolean>(true);
+  const [correctAnswerCount, setCorrentAnswerCount] = useState<number>(0);
+  const [totalScore, setTotalScore] = useState<number>(0);
+  
+  const runningTimeout = useRef<NodeJS.Timeout | null>(null);
+
+
   useEffect(() => {
     if (user) {
       loadPage();
     }
   }, [user]);
-  
+
   const loadPage = async () => {
     try{
       let id = (params).id;
 
       let filter = `id~"${id}"`
       let quiz = await getQuiz(filter);
-      console.log(quiz);
       if(quiz == null){
         filter = `quiz_code~"${id}"`
         quiz = await getQuiz(filter);
       }
-      console.log(quiz);
 
       setQuiz(quiz);
     }
@@ -133,38 +109,78 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const correct_answers = JSON.parse(quiz.correct_answers);
   const timeLimitMS = 10000;
 
+  const startTimer = (startTimeMS : number, 
+    onTimerTick : (currentTime: number) => void,
+    onTimerOver : () => void) => {
+      let prevTimeMS = Date.now();
+      let timerCurrentMS = startTimeMS;
+  
+      let timerId = setInterval(function() {
+        let nowMS = Date.now();
+        let diff = nowMS - prevTimeMS;
+        prevTimeMS = nowMS;
+  
+        timerCurrentMS -= diff;
+        if(timerCurrentMS < 0) {
+          timerCurrentMS = 0;
+        }
+        console.log(runningTimeout.current);
+        onTimerTick(timerCurrentMS);
+  
+        if(timerCurrentMS <= 0) {
+          if(runningTimeout.current != null) {
+            clearInterval(runningTimeout.current);
+            runningTimeout.current = (null);
+            onTimerOver();
+          }
+        }
+      }, 10);
+      runningTimeout.current = (timerId);
+  }
+
   const submitAnswer = async (answerIndex : number | null) => {
-    if(runningTimeout != null){
-      clearInterval(runningTimeout);
-      runningTimeout = null;
+    if(runningTimeout.current != null){
+      clearInterval(runningTimeout.current);
+      runningTimeout.current = (null);
     }
 
     if(answerIndex != null) {
       if(correct_answers[questionIndex] == answers[questionIndex][answerIndex]) {
-        correctAnswerCount += 1;
+        setCorrentAnswerCount(correctAnswerCount + 1);
         let spentTimePct = 0;
         if(timerData != null)
           spentTimePct = (timerData.timeMS / timeLimitMS);
         
         spentTimePct = Math.pow(spentTimePct, 0.5);
         let score = Math.round(spentTimePct * 100);
-        totalScore += score;
-        console.log(score);
+        setTotalScore(score + totalScore);
       }
+      setSelectedAnswer(answerIndex);
     }
+    else
+      setSelectedAnswer(-1);
 
     if(questions.length > questionIndex + 1) {
-      shouldStartTimeout = true;
-      setQuestionIdex(questionIndex + 1);
+      setShowCorrectAnswer(true);
+      setTimeout(() => {
+        setShowCorrectAnswer(false);
+        setQuestionIdex(questionIndex + 1);
+        setShouldStartTimeout(true);
+      }, 2000)
     }
     else{
-      endQuiz();
-      await pb.collection('scores').create({
-        "quiz_id": quiz?.id,
-        "user_id": user.id,
-        "score": totalScore,
-        "correct_answers": correctAnswerCount,
-      })
+      setShowCorrectAnswer(true);
+      setTimeout(async () => {
+        setShowCorrectAnswer(false);
+        setShouldStartTimeout(false);
+        endQuiz();
+        await pb.collection('scores').create({
+          "quiz_id": quiz?.id,
+          "user_id": user.id,
+          "score": totalScore,
+          "correct_answers": correctAnswerCount,
+        })
+      }, 2000)
     }
   }
 
@@ -173,9 +189,13 @@ export default function QuizPage({ params }: { params: {id: string }} ){
 
   }
 
+  const onBackButton = () => {
+    router.push('/quiz');
+  }
 
-  if(runningTimeout == null && shouldStartTimeout){
-    shouldStartTimeout = false;
+
+  if(runningTimeout.current == null && shouldStartTimeout){
+    setShouldStartTimeout(false);
 
     let iTimerD = new TimerData();
     iTimerD.timeMS = timeLimitMS;
@@ -206,14 +226,14 @@ export default function QuizPage({ params }: { params: {id: string }} ){
       
   return(
     <>
-    <Header quizMainHeaderMode={false}/>
+    <Header quizMainHeaderMode={false} backButton={onBackButton}/>
     {quizFinished &&
     <div className='outer-content-div'>
       <div className='content-div'>
       <div className='center-col'>
           <Card className='main-card'>
             <CardHeader className='justify-center'>
-              <p className='text-xl font-bold text-center'>Gratulálunk!</p>
+              <p className='text-3xl font-bold text-center'>Gratulálunk!</p>
             </CardHeader>
             <CardBody>
               <div className='card-body'>
@@ -238,23 +258,38 @@ export default function QuizPage({ params }: { params: {id: string }} ){
           <Card className='main-card'>
             <CardBody>
               <div className='card-body'>
+                <p className='text-3xl font-bold text-center'>{questionIndex + 1}. kérdés</p>
                 <p className='text-xl font-bold text-center'>{questions[questionIndex]}</p>
                 <div className='answers-div'>
-                  {answers[questionIndex].map((ans : string, index : number) => (
-                    <Button className='answer-button' key={index} onClick={() => submitAnswer(index)}>
-                      <span className='text-xl text-center'>{ans}</span>
-                    </Button>
-                  ))}
+                  {answers[questionIndex].map((ans : string, index : number) => {
+                    let bg: "default" | "success" | "danger" = "default";
+                    if(showCorrectAnswer) {
+                      if(correct_answers[questionIndex] == answers[questionIndex][index])
+                        bg = 'success';
+                      else if(index == selectedAnswer)
+                        bg = 'danger';
+                    }
+                    
+                    let click = () => {};
+                    if(!showCorrectAnswer)
+                      click = () => submitAnswer(index);
+
+                    return (
+                      <Button color={bg} className='answer-button' key={index} onClick={click}>
+                        <span className='text-xl text-center'>{ans}</span>
+                      </Button>
+                    );
+                })}
                 </div>
               </div>
             </CardBody>
           </Card>
         </div>
-        <div className='side-col'>
+        <div className='side-col flex flex-col gap-4'>
           <Card className='clock-card'>
             <CardBody>
               <div className='clock-body'>
-                <p className='text-xl text-center'>Kérdésre hátralévő idő</p>
+                <p className='text-xl text-center font-bold'>Kérdésre hátralévő idő</p>
                 <div>
                   <CircularProgress
                     aria-label="Loading..."
@@ -270,6 +305,14 @@ export default function QuizPage({ params }: { params: {id: string }} ){
                     label={timerData?.timeMS != null ? formatMSToLabel(timerData.timeMS) : formatMSToLabel(timeLimitMS)}
                   />
                 </div>
+              </div>
+            </CardBody>
+          </Card>
+          <Card className='clock-card'>
+            <CardBody>
+              <div className='flex flex-col gap-0.5'>
+                <p className='text-xl text-center font-bold'>Pontszám</p>
+                <p className='text-xl text-center'>{totalScore}</p>
               </div>
             </CardBody>
           </Card>

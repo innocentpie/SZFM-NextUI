@@ -29,6 +29,12 @@
   color:white;
 }
 
+.backButton {
+  font-size: 1.5rem;
+  height: 3rem;
+  width: 4rem;
+}
+
 .createButton{
   background-color: #2DDB41;
 }

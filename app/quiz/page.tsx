@@ -7,7 +7,7 @@ import Header from "../header/Header";
 import pb from '../authentication/PocketBaseClient';
 import { Button, Card, CardBody, CardFooter, CardHeader, Chip, Divider, Pagination } from "@nextui-org/react";
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from './categories';
 import LeaderBoardModal from '@/app/Modals/LeaderBoardModal'
 
@@ -28,7 +28,7 @@ export default function QuizPage() {
 
   return (
     <>
-      <Header quizMainHeaderMode={true} />
+      <Header quizMainHeaderMode={true} backButton={null} />
       <div className='main-container'>
         <Suspense fallback={<div><h1><p>Betöltés...</p></h1></div>}>
           <QuizContent user={user} />
@@ -48,6 +48,8 @@ function QuizContent({ user }: QuizContentProps) {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number>(1);
   const [isLeaderBordOpen, setisLeaderBordOpen] = useState(false);
+  const router = useRouter();
+
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
   const selectedQuizId = useRef<string | null>(null);
@@ -158,11 +160,9 @@ function QuizContent({ user }: QuizContentProps) {
             </CardBody>
             <CardFooter className='quiz-card-footer'>
               <div>
-                <Link href={`/quiz/${quiz.expand.quiz_id.quiz_code}`} passHref>
-                  <Button className='mr-1' color='primary' as="a">
-                    <span>Kitöltés (wip)</span>
-                  </Button>
-                </Link>
+                <Button className='mr-1' color='primary' as="a" onClick={() => router.push(`/quiz/${quiz.expand.quiz_id.quiz_code}`)}>
+                  <span>Kitöltés (wip)</span>
+                </Button>
               </div>
               <div>
                 <Button className='ml-1'  color='secondary' onClick={()=>handleLeaderClick(quiz.id)}>
