@@ -89,6 +89,8 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const [quizLoading, setQuizLoading] = useState<boolean>(true);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
   const [quiz, setQuiz] = useState<any>(null);
+  const [showCorrectAnswer, setShowCorrectAnswer] = useState<boolean>(false);
+  const [selectedAnswer, setSelectedAnswer] = useState<number>(-1);
   const [questionIndex, setQuestionIdex] = useState<number>(0);
   const [timerData, setTimerData] = useState<TimerData>();
   useEffect(() => {
@@ -150,20 +152,34 @@ export default function QuizPage({ params }: { params: {id: string }} ){
         let score = Math.round(spentTimePct * 100);
         totalScore += score;
       }
+      setSelectedAnswer(answerIndex);
     }
+    else
+      setSelectedAnswer(-1);
 
     if(questions.length > questionIndex + 1) {
-      shouldStartTimeout = true;
-      setQuestionIdex(questionIndex + 1);
+      setShowCorrectAnswer(true);
+      setTimeout(() => {
+        setShowCorrectAnswer(false);
+        shouldStartTimeout = true;
+        setQuestionIdex(questionIndex + 1);
+      }, 2000)
     }
     else{
-      endQuiz();
-      await pb.collection('scores').create({
-        "quiz_id": quiz?.id,
-        "user_id": user.id,
-        "score": totalScore,
-        "correct_answers": correctAnswerCount,
-      })
+      setShowCorrectAnswer(true);
+      setTimeout(async () => {
+        setShowCorrectAnswer(false);
+        shouldStartTimeout = false;
+        endQuiz();
+        await pb.collection('scores').create({
+          "quiz_id": quiz?.id,
+          "user_id": user.id,
+          "score": totalScore,
+          "correct_answers": correctAnswerCount,
+        })
+      }, 2000)
+
+      
     }
   }
 
@@ -244,11 +260,25 @@ export default function QuizPage({ params }: { params: {id: string }} ){
                 <p className='text-3xl font-bold text-center'>{questionIndex + 1}. kérdés</p>
                 <p className='text-xl font-bold text-center'>{questions[questionIndex]}</p>
                 <div className='answers-div'>
-                  {answers[questionIndex].map((ans : string, index : number) => (
-                    <Button className='answer-button' key={index} onClick={() => submitAnswer(index)}>
-                      <span className='text-xl text-center'>{ans}</span>
-                    </Button>
-                  ))}
+                  {answers[questionIndex].map((ans : string, index : number) => {
+                    let bg: "default" | "success" | "danger" = "default";
+                    if(showCorrectAnswer) {
+                      if(correct_answers[questionIndex] == answers[questionIndex][index])
+                        bg = 'success';
+                      else if(index == selectedAnswer)
+                        bg = 'danger';
+                    }
+                    
+                    let click = () => {};
+                    if(!showCorrectAnswer)
+                      click = () => submitAnswer(index);
+
+                    return (
+                      <Button color={bg} className='answer-button' key={index} onClick={click}>
+                        <span className='text-xl text-center'>{ans}</span>
+                      </Button>
+                    );
+                })}
                 </div>
               </div>
             </CardBody>
