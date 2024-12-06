@@ -49,7 +49,6 @@ const formatMSToLabel = (ms : number) => {
   return formatted;
 }
 
-let correctAnswerCount = 0;
 
 export default function QuizPage({ params }: { params: {id: string }} ){
   const { user, loading } = useAuth();
@@ -62,6 +61,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const [questionIndex, setQuestionIdex] = useState<number>(0);
   const [timerData, setTimerData] = useState<TimerData>();
   const [shouldStartTimeout, setShouldStartTimeout] = useState<boolean>(true);
+  const [correctAnswerCount, setCorrentAnswerCount] = useState<number>(0);
   const [totalScore, setTotalScore] = useState<number>(0);
   
   const runningTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -146,7 +146,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
 
     if(answerIndex != null) {
       if(correct_answers[questionIndex] == answers[questionIndex][answerIndex]) {
-        correctAnswerCount += 1;
+        setCorrentAnswerCount(correctAnswerCount + 1);
         let spentTimePct = 0;
         if(timerData != null)
           spentTimePct = (timerData.timeMS / timeLimitMS);
