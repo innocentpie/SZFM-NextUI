@@ -56,7 +56,7 @@ export default function LeaderBoardTable({ quizScores }: { quizScores: any[] }) 
             <TableBody emptyContent={"Nincsenek eredmények."}>
             {
                 quizScores.map((score : any, index : number) => {
-                    console.log(score);
+                    
                     let st = score.selected ? {background: "gainsboro"} : {};
                     return (
                     <TableRow key={index + 1} style={st}>
