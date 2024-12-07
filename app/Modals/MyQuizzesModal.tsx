@@ -306,8 +306,6 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
 
   const handleDelete = async (quizId: string) => {
     try {
-      const leaderboard = await pb.collection('leaderboards').getFirstListItem(`quiz_id="${quizId}"`);
-      await pb.collection('leaderboards').delete(leaderboard.id);
       await pb.collection('quizzes').delete(quizId);
       setHasModified(true);
       setQuizzes(quizzes.filter((quiz) => quiz.id !== quizId));

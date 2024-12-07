@@ -169,6 +169,16 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
        return;
     }
 
+    if(quizDescription.length < 10) {
+      toastwarn("A kvíz leírása minimum 10 karakter hosszú.",WarningOptions)
+       return;
+    }
+
+    if(quizDescription.length > 400) {
+      toastwarn("A kvíz leírása maximum 400 karakter hosszú.",WarningOptions)
+       return;
+    }
+
     for (let i = 0; i < combinedQuestions.length; i++) {
       const q = combinedQuestions[i];
       let numberOfQuestions = i+1;
@@ -181,7 +191,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
       const answersArray = q.answers.split(';').map(ans => ans.trim());
       if (answersArray.length < 1 || answersArray.length > 4) {
         //alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
-        toastwarn( "A(z) "  + numberOfQuestions +". kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.",WarningOptions)
+        toastwarn( "A(z) "  + numberOfQuestions +". kérdéshez 1 és 4 közötti válaszlehetőséget kell megadni.",WarningOptions)
         return;
       }
       if (!answersArray.includes(q.correct_answer.trim())) {
