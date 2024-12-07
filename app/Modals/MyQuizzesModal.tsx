@@ -13,7 +13,11 @@ import {
   SelectItem,
   Divider,
   Input,
-  Tooltip
+  Tooltip,
+  Dropdown,
+  DropdownTrigger,
+  DropdownMenu,
+  DropdownItem
 } from '@nextui-org/react';
 import { useAuth } from '../authentication/AuthContext';
 import pb from '../authentication/PocketBaseClient';
@@ -22,6 +26,7 @@ import styles from './CreateQuizModal.module.css';
 import { MdiPlus } from '../assets/SvgIcons';
 import { Bounce, toast, ToastContainer } from 'react-toastify';
 import { toasterror, toastsuccess, toastwarn } from '../toasthelper';
+import './MyQuizzesModal.css';
 
 interface Quiz {
   id: string;
@@ -58,6 +63,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
   const [filteredQuizzes, setFilteredQuizzes] = useState<Quiz[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [verifiedQuizIds, setVerifiedQuizIds] = useState<string[]>([]);
+
 
   const categories = [
     { label: 'matematika', icon: <icons.MynauiMathSolid /> },
@@ -109,10 +115,15 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
   useEffect(() => {
     if (searchTerm === '') {
       setFilteredQuizzes(quizzes);
-    } else if ("státusz".includes(searchTerm.toLowerCase())) {
+    } else if ("x".includes(searchTerm.toLowerCase())) {
       // Szűrés nem hitelesített kvízekre
       setFilteredQuizzes(quizzes.filter((quiz) => !verifiedQuizIds.includes(quiz.id)));
-    } else {
+    }
+    else if ("j".includes(searchTerm.toLowerCase())) {
+      // Szűrés hitelesített kvízekre
+      setFilteredQuizzes(quizzes.filter((quiz) => verifiedQuizIds.includes(quiz.id)));
+    } 
+    else {
       const searchLower = searchTerm.toLowerCase();
       setFilteredQuizzes(
         quizzes.filter((quiz: any) =>
@@ -557,23 +568,24 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
             </ModalContent>
           </Modal>
         )}
-        <Modal isOpen={isOpen} onClose={handleModalClose} closeButton style={{ top: '1.5rem', position: 'absolute' }}>
+        <Modal className='mqmodal' isOpen={isOpen} onClose={handleModalClose} closeButton style={{ top: '1.5rem', position: 'absolute' }}>
           <ModalContent>
-            <ModalHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span>Kvízek</span>
-              <div className={styles.inputContainer}>
+            <ModalHeader style={{ marginRight: '.4rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span style={{marginRight: '.4rem'}}>Kvízek</span>
+              <div className={styles.inputContainer} style={{flexGrow: 1}}>
                 <input
                   key="default"
                   type="text"
-                  placeholder="Keresés...(pl. státusz)"
+                  placeholder="Keresés... (státuszra: J vagy X)"
                   className={styles.customInput}
                   value={searchTerm}
                   onChange={(e) => handleSearch(e.target.value)}
                 />
-                <icons.RivetIconsMagnifyingGlass className={styles.icon} />
+                <icons.RivetIconsMagnifyingGlass style={{margin: '4 4 4 4', width: '1.4rem', paddingBottom: '.5rem'}} className={styles.icon} />
               </div>
+
             </ModalHeader>
-            <ModalBody>
+            <ModalBody className='mqmodalbody'>
               {loading ? (
                 <div>Betöltés...</div>
               ) : filteredQuizzes.length === 0 ? (

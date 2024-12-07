@@ -53,18 +53,33 @@ function QuizContent({ user }: QuizContentProps) {
 
   const searchParams = useSearchParams();
   const searchQuery = searchParams.get('search') || '';
+  const catQuery = searchParams.get('cat') || '';
+  const diffQuery = searchParams.get('diff') || '';
   const selectedQuizId = useRef<string | null>(null);
 
-  const loadQuizzes = async (page: number = 1, searchQuery: string = '') => {
+  const loadQuizzes = async (page: number = 1) => {
     try {
       let filter = '';
       if (searchQuery) {
-        filter = `quiz_id.quiz_code~"${searchQuery}" 
+        filter = `(quiz_id.quiz_code~"${searchQuery}" 
         || quiz_id.category~"${searchQuery}" 
         || quiz_id.difficulty~"${searchQuery}" 
-        || quiz_id.creator.username~"${searchQuery}"`;
+        || quiz_id.creator.username~"${searchQuery}")`;
       }
+      if (catQuery) {
+        if(filter.length != 0)
+          filter += ' && '
+        filter += `(quiz_id.category~"${catQuery}")`;
+      }
+      if (diffQuery) {
+        if(filter.length != 0)
+          filter += ' && '
+        filter += `(quiz_id.difficulty~"${diffQuery}")`;
+      }
+      
       const data = await getQuizzes(page, filter);
+      
+      console.log(data);
       setQuizzes(data.items);
       setTotalPages(data.totalPages);
     } catch (error) {
@@ -83,9 +98,9 @@ function QuizContent({ user }: QuizContentProps) {
   useEffect(() => {
     if (user) {
       setQuizLoading(true);
-      loadQuizzes(currentPage, searchQuery);
+      loadQuizzes(currentPage);
     }
-  }, [user, currentPage, searchQuery]);
+  }, [user, currentPage, searchQuery, catQuery, diffQuery]);
 
   if (quizLoading) return (<div><h1><p></p></h1></div>);
 

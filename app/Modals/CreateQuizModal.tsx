@@ -62,7 +62,6 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
     { label: 'film', icon: <icons.BxCameraMovie /> },
     { label: 'zene', icon: <icons.MdiMusic /> },
     { label: 'könyvek', icon: <icons.MaterialSymbolsBookOutline /> },
-    { label: 'játékok', icon: <icons.IonGameControllerOutline /> },
     { label: 'egyéb', icon: <icons.BasilOther1Outline /> },
   ];
 

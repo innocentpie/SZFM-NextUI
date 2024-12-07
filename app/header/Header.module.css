@@ -19,13 +19,13 @@
   display: flex;
   flex-grow: 1;
   gap: 1rem;
-  margin-right: 0.25rem;
+  margin-right: 0.85rem;
   margin-left: 0.25rem;
 }
 
 .searchButton,
 .createButton {
-  font-size: 1.5rem;
+  font-size: 1.2rem;
   margin: auto;
   height: 3rem;
   color:white;
@@ -39,6 +39,35 @@
   font-size: 1.5rem;
   height: 3rem;
   width: 4rem;
+}
+
+.catdropdowndivnofill {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  flex-direction: row;
+}
+
+.catdropdowndiv {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  flex-direction: row;
+}
+
+.catdropdowndiv2 {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  flex-direction: row;
+}
+
+.catdropdowndiv > svg > path {
+  fill: black;
+}
+
+.catdropdowndiv2 > svg > path {
+  fill: white;
 }
 
 .createButton{
@@ -57,7 +86,7 @@
 @media (max-width: 1500px) {
   .titleContainer {
     position: absolute;
-    left: 70%;
+    left: 62%;
     transform: translateX(-50%);
     display: flex;
     align-items: center;
@@ -66,6 +95,12 @@
 }
 
 @media (max-width: 1100px) {
+  .titleContainer {
+    left: 67%;
+  }
+}
+
+@media (max-width: 1000px) {
   .titleContainer {
     display: none;
   }
@@ -80,7 +115,7 @@
 
 .inputContainer {
   position: relative;
-  max-width: 28rem;
+  max-width: 19rem;
   flex-grow: 1;
   flex-shrink: 1;
 }
