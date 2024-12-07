@@ -6,7 +6,8 @@
 		"dev": "next dev --turbo",
 		"build": "next build",
 		"start": "next start",
-		"lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix"
+		"lint": "eslint . --ext .ts,.tsx -c .eslintrc.json --fix",
+		"cy:open": "cypress open"
 	},
 	"dependencies": {
 		"@nextui-org/button": "2.0.38",
@@ -43,6 +44,7 @@
 		"@typescript-eslint/eslint-plugin": "8.11.0",
 		"@typescript-eslint/parser": "8.11.0",
 		"autoprefixer": "10.4.19",
+		"cypress": "^13.16.1",
 		"eslint": "^8.57.0",
 		"eslint-config-next": "14.2.1",
 		"eslint-config-prettier": "9.1.0",
