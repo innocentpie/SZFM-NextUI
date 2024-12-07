@@ -1,12 +1,13 @@
 
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { JSXElementConstructor, ReactElement, useEffect, useState } from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Divider } from "@nextui-org/react";
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell} from "@nextui-org/react";
 import pb from '../authentication/PocketBaseClient';
 import PocketBase from 'pocketbase';
 import { stringify } from 'querystring';
+import { useAuth } from '../authentication/AuthContext';
 
 interface Quiz {
   id: string;
@@ -29,47 +30,67 @@ interface LeaderBoardModalProps {
   onClose: () => void;
 }
 
-const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, onClose }) => {
-  const [loading, setLoading] = useState<boolean>(false);
-  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
-  const pb = new PocketBase('http://127.0.0.1:8090');
-  const Quize_c = ({ quizCode = fetchQuizzes}: any) => {
-    console.log(quizCode)
-    return (
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        
-        <span>{quizCode}</span>
-          
-      </div>
+class QuizLeaderboardData {
+  public quiz: any;
+  public scores: any[] = [];
+}
+
+export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
+
+const getQuizData = async (id : string) => {
+  try{
+    let dquiz = await pb.collection('quizzes').getOne(
+      id,
+      { expand: 'creator'}
     );
-  }; 
 
-    const fetchQuizzes = async () => {
-      
-      setLoading(true);
-      try {
-        
+    let dscores = await pb.collection('scores').getList(1, 10, 
+      { filter: `quiz_id~"${id}"`, sort: '-score', expand: 'user_id'}
+    );
+    let d = new QuizLeaderboardData();
+    d.quiz = dquiz;
+    d.scores = dscores.items;
+    return d;
+  }
+  catch(error: any){
+    return null;
+  }
+};
 
-        const record = await pb.collection('quizzes').getOne<Quiz>(quiz_id as string, {
-          expand: 'relField1,relField2.subRelField'});
-          return record
-        
-      } catch (error) {
-        console.error('Fetch error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    
-    
+const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, onClose }) => {
+  const { user, loading } = useAuth();
+  const [quizLoading, setQuizLoading] = useState<boolean>(false);
+  const [quizData, setQuizData] = useState<QuizLeaderboardData>();
+
+  useEffect(() => {
+    if (isOpen && user) {
+      loadPage();
+    }
+  }, [user, isOpen]);
+
+  const loadPage = async () => {
+    try{
+      if(quiz_id == null)
+        return;
+      let id = quiz_id;
+      let d = await getQuizData(id) ?? undefined;
+      setQuizData(d);
+    }
+    catch (error) {
+      console.error('Quiz fetch hiba:', error);
+    }
+    finally {
+      setQuizLoading(false);
+    }
+  }
+
+
     return (
-      
       <>
-        
         <Modal 
           backdrop="opaque" 
           isOpen={isOpen} 
+          onClose={onClose}
           
           motionProps={{
             variants: {
@@ -95,36 +116,31 @@ const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, on
           <ModalContent>
             {() => (
               <>
-                <ModalHeader className="flex flex-col gap-1">Legjobb eredmények: <Quize_c  /> </ModalHeader>
+                <ModalHeader className="flex flex-col gap-1">Legjobb eredmények: {quizData?.quiz.quiz_code}</ModalHeader>
                  
                 <ModalBody>
                 <Table removeWrapper aria-label="Example static collection table">
                   <TableHeader>
-                    <TableColumn>NAME</TableColumn>
-                    <TableColumn>ROLE</TableColumn>
-                    <TableColumn>STATUS</TableColumn>
+                    <TableColumn>#</TableColumn>
+                    <TableColumn>Név</TableColumn>
+                    <TableColumn>Helyes válaszok</TableColumn>
+                    <TableColumn>Pontszám</TableColumn>
                   </TableHeader>
+
+                  
                   <TableBody>
-                    <TableRow key="1">
-                      <TableCell>Tony Reichert</TableCell>
-                      <TableCell>CEO</TableCell>
-                      <TableCell>Active</TableCell>
-                    </TableRow>
-                    <TableRow key="2">
-                      <TableCell>Zoey Lang</TableCell>
-                      <TableCell>Technical Lead</TableCell>
-                      <TableCell>Paused</TableCell>
-                    </TableRow>
-                    <TableRow key="3">
-                      <TableCell>Jane Fisher</TableCell>
-                      <TableCell>Senior Developer</TableCell>
-                      <TableCell>Active</TableCell>
-                    </TableRow>
-                    <TableRow key="4">
-                      <TableCell>William Howard</TableCell>
-                      <TableCell>Community Manager</TableCell>
-                      <TableCell>Vacation</TableCell>
-                    </TableRow>
+                    {
+                      quizData?.scores.map((score : any, index : number) => {
+                        return (
+                          <TableRow key={index + 1}>
+                            <TableCell>{index + 1}.</TableCell>
+                            <TableCell>{score.expand.user_id.username}</TableCell>
+                            <TableCell>{score.correct_answers}</TableCell>
+                            <TableCell>{score.score}</TableCell>
+                          </TableRow>
+                        );
+                      }) ?? []
+                    }
                   </TableBody>
                 </Table>
                 </ModalBody>
