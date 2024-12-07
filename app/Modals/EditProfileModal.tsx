@@ -139,16 +139,16 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
               </div>
             </ModalBody>
             <ModalFooter>
+              <Button type="submit" color="primary" disabled={isSubmitting}>
+                {isSubmitting ? "Mentés..." : "Mentés"}
+              </Button>
               <Button
                 color="danger"
                 variant="light"
                 onPress={onClose}
                 disabled={isSubmitting}
               >
-                Bezárás
-              </Button>
-              <Button type="submit" color="primary" disabled={isSubmitting}>
-                {isSubmitting ? "Mentés..." : "Mentés"}
+                Mégsem
               </Button>
             </ModalFooter>
           </form>

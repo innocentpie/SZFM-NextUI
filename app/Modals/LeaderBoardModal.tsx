@@ -9,6 +9,7 @@ import PocketBase from 'pocketbase';
 import { stringify } from 'querystring';
 import { useAuth } from '../authentication/AuthContext';
 import LeaderBoardTable, { getScoresForLeaderBoardTable } from '../leaderboardtable/LeaderBoardTable';
+import './LeaderBoardModal.css';
 
 interface Quiz {
   id: string;
@@ -90,7 +91,10 @@ const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, on
           backdrop="opaque" 
           isOpen={isOpen} 
           onClose={onClose}
-          style={{top: '5%'}}
+          className='leaderboardmodal'
+          style={{
+            top: '5%',
+          }}
           
           motionProps={{
             variants: {
@@ -118,7 +122,7 @@ const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, on
               <>
                 <ModalHeader className="flex flex-col gap-1">Legjobb eredmények: {quizData?.quiz.quiz_code}</ModalHeader>
                  
-                <ModalBody>
+                <ModalBody className='leaderboardmodalbody'>
                   <LeaderBoardTable quizScores={quizData?.scores ?? []}></LeaderBoardTable>
                 </ModalBody>
                 <ModalFooter>

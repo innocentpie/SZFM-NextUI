@@ -179,6 +179,11 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
        return;
     }
 
+    if(questions.length == 0) {
+      toastwarn("Legalább 1 kérdés hozzáadása közelező.",WarningOptions)
+      return;
+    }
+
     for (let i = 0; i < combinedQuestions.length; i++) {
       const q = combinedQuestions[i];
       let numberOfQuestions = i+1;

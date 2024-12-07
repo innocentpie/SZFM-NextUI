@@ -112,7 +112,7 @@ export default function Header({ quizMainHeaderMode, backButton }: { quizMainHea
           <Image
             src={getAvatar()}
             alt="User Avatar"
-            onClick={handleAvatarClick}
+            onClick={quizMainHeaderMode ? handleAvatarClick : () => {} }
             style={{ minWidth:65, cursor: 'pointer', borderRadius: '50%', border: '0.15rem solid #000', marginRight: '0.5rem' }}
             height={65}
             width={65}
