@@ -65,7 +65,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const [questionIndex, setQuestionIdex] = useState<number>(0);
   const [timerData, setTimerData] = useState<TimerData>();
   const [shouldStartTimeout, setShouldStartTimeout] = useState<boolean>(true);
-  const [correctAnswerCount, setCorrentAnswerCount] = useState<number>(0);
+  const correctAnswerCount = useRef<number>(0);
   const [totalScore, setTotalScore] = useState<number>(0);
   
   const runningTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -151,7 +151,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
     let newScore = totalScore;
     if(answerIndex != null) {
       if(correct_answers[questionIndex] == answers[questionIndex][answerIndex]) {
-        setCorrentAnswerCount(correctAnswerCount + 1);
+        correctAnswerCount.current += 1;
         let spentTimePct = 0;
         if(timerData != null)
           spentTimePct = (timerData.timeMS / timeLimitMS);
@@ -190,7 +190,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
       "quiz_id": quiz?.id,
       "user_id": user.id,
       "score": finalScore,
-      "correct_answers": correctAnswerCount,
+      "correct_answers": correctAnswerCount.current,
     })
     quizLeaderBoardScores.current = await getScoresForLeaderBoardTable(quiz.id, quizScoreRecord.current.id);
     setQuizFinished(true);
@@ -245,7 +245,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
             <CardBody>
               <div className='card-body'>
                 <div className='flex justify-center items-center flex-col w-full'>
-                  <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount}</p>
+                  <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount.current}</p>
                   <p className='text-xl font-bold text-center'>Pontszám: {totalScore}</p>
 
                   <div className='mt-8 w-full'>

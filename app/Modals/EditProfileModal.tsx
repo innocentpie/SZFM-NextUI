@@ -14,6 +14,7 @@ import { useAuth } from "../authentication/AuthContext";
 import Image from "next/image";
 import avatarImages from '../assets/avatarImages';
 import { Bounce, toast, ToastContainer } from "react-toastify";
+import { toasterror, toastsuccess, toastwarn } from '../toasthelper';
 
 const predefinedImageKeys = [
   "avatar1",
@@ -54,6 +55,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
     draggable: true,
     progress: undefined,
     theme: "colored",
+    toastId: "editprofilemodal_error_toast",
     transition: Bounce,
   }
   const SuccesOptions = {
@@ -63,6 +65,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
     pauseOnHover: true,
     draggable: true,
     progress: undefined,
+    toastId: "editprofilemodal_success_toast",
     theme: "colored",
     transition: Bounce,
   }
@@ -75,12 +78,12 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
     try {
       await updateProfile({ username, profile_picture: selectedImageKey });
       
-      toast.success("Sikeres szerkesztés",SuccesOptions)
+      toastsuccess("Sikeres szerkesztés",SuccesOptions)
       onClose();
     } catch (error) {
       console.error("Profil szerkesztési hiba:", error);
       //alert("Hiba történt a profil szerkesztésekor. Lehet, hogy létezik már azonos névvel felhasználó.");
-      toast.error("Hiba történt a profil szerkesztésekor.\nLehet, hogy létezik már azonos névvel felhasználó.",ErrorOptions)
+      toasterror("Hiba történt a profil szerkesztésekor.\nLehet, hogy létezik már azonos névvel felhasználó.",ErrorOptions)
     } finally {
       setIsSubmitting(false);
     }
@@ -151,7 +154,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
           </form>
         </ModalContent>
       </Modal>
-      <ToastContainer stacked limit={5}
+      {/* <ToastContainer stacked limit={5}
           position="top-center"
           autoClose={3000}
           hideProgressBar={false}
@@ -162,7 +165,7 @@ const EditProfileModal: React.FC<EditProfileModalProps> = ({ isOpen, onClose }) 
           draggable
           pauseOnHover
           theme="colored"
-          />
+          /> */}
     </div>
   );
 };

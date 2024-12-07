@@ -21,6 +21,7 @@ import * as icons from '../assets/SvgIcons';
 import styles from './CreateQuizModal.module.css';
 import { MdiPlus } from '../assets/SvgIcons';
 import { Bounce, toast, ToastContainer } from 'react-toastify';
+import { toasterror, toastsuccess, toastwarn } from '../toasthelper';
 
 interface Quiz {
   id: string;
@@ -133,6 +134,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     draggable: true,
     progress: undefined,
     theme: "colored",
+    toastId: "myquizzesmodal_warning_toast",
     transition: Bounce,
 
   }
@@ -144,6 +146,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     draggable: true,
     progress: undefined,
     theme: "colored",
+    toastId: "myquizzesmodal_success_toast",
     transition: Bounce,
   }
   const ErrorOptions = {
@@ -153,6 +156,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     pauseOnHover: true,
     draggable: true,
     progress: undefined,
+    toastId: "myquizzesmodal_error_toast",
     theme: "colored",
     transition: Bounce,
   }
@@ -166,7 +170,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     } catch (error) {
       console.error('Verify error:', error);
       //alert('Hiba történt a kvíz hitelesítésekor.');
-      toast.error("Hiba történt a kvíz hitelesítésekor.",ErrorOptions)
+      toasterror("Hiba történt a kvíz hitelesítésekor.",ErrorOptions)
     }
   };
 
@@ -180,7 +184,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
     } catch (error) {
       console.error('Unverify error:', error);
       //alert('Hiba történt a kvíz hitelesítésének visszavonásakor.');
-      toast.error("Hiba történt a kvíz hitelesítésének visszavonásakor.",ErrorOptions)
+      toasterror("Hiba történt a kvíz hitelesítésének visszavonásakor.",ErrorOptions)
     }
   };
 
@@ -216,7 +220,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
   const handleEditSubmit = async () => {
     if (!editingQuiz || !category || !difficulty) {
       //alert('Kérjük, töltsd ki az összes mezőt!');
-      toast.warn("Kérjük, töltsd ki az összes kötelező mezőt.",WarningOptions)
+      toastwarn("Kérjük, töltsd ki az összes kötelező mezőt.",WarningOptions)
 
       return;
     }
@@ -226,18 +230,18 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       let numberOfQuestions = i+1;
       if (answerArray.length < 1 || answerArray.length > 4) {
         //alert(`A(z) ${i + 1}. kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.`);
-        toast.warn( "A(z) "  + numberOfQuestions +". kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.",WarningOptions)
+        toastwarn( "A(z) "  + numberOfQuestions +". kérdéshez 1 és 4 közötti válaszlehetőséget kell megadnod.",WarningOptions)
         return;
       }
       if (!answerArray.includes(correctAnswers[i].trim())) {
         //alert(`A(z) ${i + 1}. kérdéshez megadott helyes válasz nem szerepel a válaszok között.`);
-        toast.warn( "A(z) "  + numberOfQuestions +". kérdéshez megadott helyes válasz nem szerepel a válaszok között.",WarningOptions)
+        toastwarn( "A(z) "  + numberOfQuestions +". kérdéshez megadott helyes válasz nem szerepel a válaszok között.",WarningOptions)
         return;
       }
       const correctAnswersCount = answerArray.filter(ans => ans === correctAnswers[i].trim()).length;
       if (correctAnswersCount !== 1) {
         //alert(`A(z) ${i + 1}. kérdéshez pontosan egy helyes választ kell megadni.`);
-        toast.warn( "A(z) "  + numberOfQuestions +". kérdéshez pontosan egy helyes választ kell megadni.",WarningOptions)
+        toastwarn( "A(z) "  + numberOfQuestions +". kérdéshez pontosan egy helyes választ kell megadni.",WarningOptions)
         return;
       }
     }
@@ -262,11 +266,11 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
       setHasModified(true);
       setEditingQuiz(null);
       //alert('Kvíz sikeresen frissítve! Adminisztrátor jóváhagyásra vár.');
-      toast.success("Kvíz sikeresen frissítve! Adminisztrátor jóváhagyásra vár.",SuccesOptions)
+      toastsuccess("Kvíz sikeresen frissítve! Adminisztrátor jóváhagyásra vár.",SuccesOptions)
     } catch (error) {
       console.error('Update quiz error:', error);
       //alert('Hiba történt a kvíz frissítésekor.');
-      toast.error("Hiba történt a kvíz frissítésekor.",ErrorOptions)
+      toasterror("Hiba történt a kvíz frissítésekor.",ErrorOptions)
 
     }
   };
@@ -302,17 +306,15 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
 
   const handleDelete = async (quizId: string) => {
     try {
-      const leaderboard = await pb.collection('leaderboards').getFirstListItem(`quiz_id="${quizId}"`);
-      await pb.collection('leaderboards').delete(leaderboard.id);
       await pb.collection('quizzes').delete(quizId);
       setHasModified(true);
       setQuizzes(quizzes.filter((quiz) => quiz.id !== quizId));
       //alert('Kvíz sikeresen törölve!');
-      toast.success("Kvíz sikeresen törölve!",SuccesOptions)
+      toastsuccess("Kvíz sikeresen törölve!",SuccesOptions)
     } catch (error) {
       console.error('Delete quiz error:', error);
       //alert('Hiba történt a kvíz törlésekor.');
-      toast.error("Hiba történt a kvíz törlésekor.",ErrorOptions)
+      toasterror("Hiba történt a kvíz törlésekor.",ErrorOptions)
     }
   };
 
@@ -612,7 +614,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
           </ModalContent>
         </Modal>
 
-        <ToastContainer stacked limit={5}
+        {/* <ToastContainer stacked limit={5}
               position="top-center"
               autoClose={3000}
               hideProgressBar={false}
@@ -623,7 +625,7 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
               draggable
               pauseOnHover
               theme="colored"
-              />
+              /> */}
       </div>
     </>
   );
