@@ -52,9 +52,8 @@ elérhető az összes felhasználói funkció. A kvízek kategóriák szerint va
 - [Tesztterv](/documentation/TesztTerv.md)
 
 ## Figma Links
-- [Login](https://www.figma.com/proto/HZceAZjbEJ74k7ruRHOFkr/Login?node-id=0-1&t=vne3hacnIJxAREPG-1)
-- [Signup](https://www.figma.com/proto/HZceAZjbEJ74k7ruRHOFkr/Login?node-id=4-10&t=akJb23WfnjgB0Yji-1)
 - [Fő oldal](https://www.figma.com/proto/EAczEucAD3LXRYjv0El45o/Kv%C3%ADzoldal?node-id=15-25&t=ThqtxZmHVYgSmY2F-1)
+- [Fő oldal teljes figma](https://www.figma.com/design/EAczEucAD3LXRYjv0El45o/Kv%C3%ADzoldal?node-id=0-1&t=8MJa4nAC0srYV2NS-1)
 
 ## KanBan Board
 - [Trello](https://trello.com/b/SPU09TlD/szfm-csk2-kanban-board)
