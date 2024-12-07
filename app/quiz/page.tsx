@@ -10,6 +10,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { categories } from './categories';
 import LeaderBoardModal from '@/app/Modals/LeaderBoardModal'
+import { ToastContainer } from 'react-toastify';
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto';
 
@@ -181,6 +182,18 @@ function QuizContent({ user }: QuizContentProps) {
           color={"warning"}
         />
       </div>
+      <ToastContainer stacked limit={5}
+          position="top-center"
+          autoClose={3000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+          />
     </div>
   );
 }
