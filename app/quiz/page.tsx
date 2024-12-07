@@ -79,7 +79,6 @@ function QuizContent({ user }: QuizContentProps) {
       
       const data = await getQuizzes(page, filter);
       
-      console.log(data);
       setQuizzes(data.items);
       setTotalPages(data.totalPages);
     } catch (error) {
