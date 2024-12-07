@@ -157,7 +157,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
           spentTimePct = (timerData.timeMS / timeLimitMS);
         
         spentTimePct = Math.pow(spentTimePct, 0.5);
-        let score = Math.round(spentTimePct * 100);
+        let score = Math.round(spentTimePct * 1000);
         newScore += score;
         setTotalScore(newScore);
       }
