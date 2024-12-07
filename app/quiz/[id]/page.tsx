@@ -14,6 +14,7 @@ import { Button } from '@nextui-org/button';
 import { CircularProgress } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
 import LeaderBoardTable, { getScoresForLeaderBoardTable } from '@/app/leaderboardtable/LeaderBoardTable';
+import Confetti from '@/app/confetti/Confetti';
 
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
@@ -235,29 +236,31 @@ export default function QuizPage({ params }: { params: {id: string }} ){
     <>
     <Header quizMainHeaderMode={false} backButton={onBackButton}/>
     {quizFinished &&
-    <div className='outer-content-div'>
-      <div className='content-div'>
-      <div className='center-col'>
-          <Card className='main-card'>
-            <CardHeader className='justify-center'>
-              <p className='text-3xl font-bold text-center'>Gratulálunk!</p>
-            </CardHeader>
-            <CardBody>
-              <div className='card-body'>
-                <div className='flex justify-center items-center flex-col w-full'>
-                  <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount.current}</p>
-                  <p className='text-xl font-bold text-center'>Pontszám: {totalScore}</p>
+    <>
+          <Confetti speed={.4}/>
+          <div className='outer-content-div'>
+            <div className='content-div'>
+              <div className='center-col'>
+                <Card className='main-card'>
+                  <CardHeader className='justify-center'>
+                    <p className='text-3xl font-bold text-center'>Gratulálunk!</p>
+                  </CardHeader>
+                  <CardBody>
+                    <div className='card-body'>
+                      <div className='flex justify-center items-center flex-col w-full'>
+                        <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount.current}</p>
+                        <p className='text-xl font-bold text-center'>Pontszám: {totalScore}</p>
 
-                  <div className='mt-8 w-full'>
-                    <LeaderBoardTable quizScores={quizLeaderBoardScores.current}/>
-                  </div>
-                </div>
+                        <div className='mt-8 w-full'>
+                          <LeaderBoardTable quizScores={quizLeaderBoardScores.current} />
+                        </div>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
               </div>
-            </CardBody>
-          </Card>
-        </div>
-      </div>
-    </div>
+            </div>
+          </div></>
     }
 
     {!quizFinished &&
