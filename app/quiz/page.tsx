@@ -161,12 +161,12 @@ function QuizContent({ user }: QuizContentProps) {
             <CardFooter className='quiz-card-footer'>
               <div>
                 <Button className='mr-1' color='primary' as="a" onClick={() => router.push(`/quiz/${quiz.expand.quiz_id.quiz_code}`)}>
-                  <span>Kitöltés (wip)</span>
+                  <span>Kitöltés</span>
                 </Button>
               </div>
               <div>
                 <Button className='ml-1'  color='secondary' onClick={()=>handleLeaderClick(quiz.quiz_id)}>
-                  <span>Ranglista (wip)</span>
+                  <span>Ranglista</span>
                 </Button>
               </div>
             </CardFooter>
