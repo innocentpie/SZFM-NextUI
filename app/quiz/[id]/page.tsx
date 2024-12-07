@@ -248,7 +248,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
                   <CardBody>
                     <div className='card-body'>
                       <div className='flex justify-center items-center flex-col w-full'>
-                        <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount.current}</p>
+                        <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount.current} / {questions.length}</p>
                         <p className='text-xl font-bold text-center'>Pontszám: {totalScore}</p>
 
                         <div className='mt-8 w-full'>
