@@ -8,7 +8,7 @@ import pb from '@/app/authentication/PocketBaseClient';
 import { categories } from '../categories';
 import headerStyles from '@app/header/Header.module.css';
 import Header from '@/app/header/Header';
-import { Card, CardBody, CardHeader } from '@nextui-org/card';
+import { Card, CardBody, CardHeader } from '@nextui-org/react';
 import './quizidpage.css';
 import { Button } from '@nextui-org/button';
 import { CircularProgress } from '@nextui-org/react';
