@@ -90,6 +90,7 @@ const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, on
           backdrop="opaque" 
           isOpen={isOpen} 
           onClose={onClose}
+          style={{top: '5%'}}
           
           motionProps={{
             variants: {
@@ -122,7 +123,7 @@ const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, on
                 </ModalBody>
                 <ModalFooter>
                   <Button color="danger" variant="light" onPress={onClose}>
-                    Close
+                    Bezár
                   </Button>
                 </ModalFooter>
               </>
