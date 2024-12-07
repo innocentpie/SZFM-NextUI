@@ -1,4 +1,4 @@
 ## Adatbázis Terv
-![Adatbázis Struktúra](https://github.com/user-attachments/assets/61bce67e-2070-4aff-87ea-e31f9373cca9)
+![Adatbázis Struktúra](/documentation/otherFigures/AdatbazisStruktura.png)
 
 ### [Back to README](/README.md)
