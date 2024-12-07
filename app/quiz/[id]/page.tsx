@@ -13,6 +13,7 @@ import './quizidpage.css';
 import { Button } from '@nextui-org/button';
 import { CircularProgress } from '@nextui-org/react';
 import { useRouter } from 'next/navigation';
+import LeaderBoardTable, { getScoresForLeaderBoardTable } from '@/app/leaderboardtable/LeaderBoardTable';
 
 
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto'
@@ -55,6 +56,9 @@ export default function QuizPage({ params }: { params: {id: string }} ){
   const router = useRouter();
   const [quizLoading, setQuizLoading] = useState<boolean>(true);
   const [quizFinished, setQuizFinished] = useState<boolean>(false);
+  const quizLeaderBoardScores = useRef<any>();
+  const quizScoreRecord = useRef<any>();
+
   const [quiz, setQuiz] = useState<any>(null);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState<boolean>(false);
   const [selectedAnswer, setSelectedAnswer] = useState<number>(-1);
@@ -144,6 +148,7 @@ export default function QuizPage({ params }: { params: {id: string }} ){
       runningTimeout.current = (null);
     }
 
+    let newScore = totalScore;
     if(answerIndex != null) {
       if(correct_answers[questionIndex] == answers[questionIndex][answerIndex]) {
         setCorrentAnswerCount(correctAnswerCount + 1);
@@ -153,7 +158,8 @@ export default function QuizPage({ params }: { params: {id: string }} ){
         
         spentTimePct = Math.pow(spentTimePct, 0.5);
         let score = Math.round(spentTimePct * 100);
-        setTotalScore(score + totalScore);
+        newScore += score;
+        setTotalScore(newScore);
       }
       setSelectedAnswer(answerIndex);
     }
@@ -173,20 +179,21 @@ export default function QuizPage({ params }: { params: {id: string }} ){
       setTimeout(async () => {
         setShowCorrectAnswer(false);
         setShouldStartTimeout(false);
-        endQuiz();
-        await pb.collection('scores').create({
-          "quiz_id": quiz?.id,
-          "user_id": user.id,
-          "score": totalScore,
-          "correct_answers": correctAnswerCount,
-        })
+        
+        endQuiz(newScore);
       }, 2000)
     }
   }
 
-  const endQuiz = () => {
+  const endQuiz = async (finalScore: number) => {
+    quizScoreRecord.current = await pb.collection('scores').create({
+      "quiz_id": quiz?.id,
+      "user_id": user.id,
+      "score": finalScore,
+      "correct_answers": correctAnswerCount,
+    })
+    quizLeaderBoardScores.current = await getScoresForLeaderBoardTable(quiz.id, quizScoreRecord.current.id);
     setQuizFinished(true);
-
   }
 
   const onBackButton = () => {
@@ -237,9 +244,13 @@ export default function QuizPage({ params }: { params: {id: string }} ){
             </CardHeader>
             <CardBody>
               <div className='card-body'>
-                <div className='flex justify-center items-center flex-col'>
+                <div className='flex justify-center items-center flex-col w-full'>
                   <p className='text-xl font-bold text-center'>Helyes válaszok: {correctAnswerCount}</p>
                   <p className='text-xl font-bold text-center'>Pontszám: {totalScore}</p>
+
+                  <div className='mt-8 w-full'>
+                    <LeaderBoardTable quizScores={quizLeaderBoardScores.current}/>
+                  </div>
                 </div>
               </div>
             </CardBody>

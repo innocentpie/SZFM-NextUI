@@ -8,6 +8,7 @@ import pb from '../authentication/PocketBaseClient';
 import PocketBase from 'pocketbase';
 import { stringify } from 'querystring';
 import { useAuth } from '../authentication/AuthContext';
+import LeaderBoardTable, { getScoresForLeaderBoardTable } from '../leaderboardtable/LeaderBoardTable';
 
 interface Quiz {
   id: string;
@@ -44,12 +45,10 @@ const getQuizData = async (id : string) => {
       { expand: 'creator'}
     );
 
-    let dscores = await pb.collection('scores').getList(1, 10, 
-      { filter: `quiz_id~"${id}"`, sort: '-score', expand: 'user_id'}
-    );
+    let dscores = await getScoresForLeaderBoardTable(id);
     let d = new QuizLeaderboardData();
     d.quiz = dquiz;
-    d.scores = dscores.items;
+    d.scores = dscores;
     return d;
   }
   catch(error: any){
@@ -119,30 +118,7 @@ const LeaderBoardModal: React.FC<LeaderBoardModalProps> = ({ isOpen, quiz_id, on
                 <ModalHeader className="flex flex-col gap-1">Legjobb eredmények: {quizData?.quiz.quiz_code}</ModalHeader>
                  
                 <ModalBody>
-                <Table removeWrapper aria-label="Example static collection table">
-                  <TableHeader>
-                    <TableColumn>#</TableColumn>
-                    <TableColumn>Név</TableColumn>
-                    <TableColumn>Helyes válaszok</TableColumn>
-                    <TableColumn>Pontszám</TableColumn>
-                  </TableHeader>
-
-                  
-                  <TableBody>
-                    {
-                      quizData?.scores.map((score : any, index : number) => {
-                        return (
-                          <TableRow key={index + 1}>
-                            <TableCell>{index + 1}.</TableCell>
-                            <TableCell>{score.expand.user_id.username}</TableCell>
-                            <TableCell>{score.correct_answers}</TableCell>
-                            <TableCell>{score.score}</TableCell>
-                          </TableRow>
-                        );
-                      }) ?? []
-                    }
-                  </TableBody>
-                </Table>
+                  <LeaderBoardTable quizScores={quizData?.scores ?? []}></LeaderBoardTable>
                 </ModalBody>
                 <ModalFooter>
                   <Button color="danger" variant="light" onPress={onClose}>
