@@ -1,5 +1,5 @@
 export const BackIcon = (props) => (
-<svg class="svg-icon" 
+<svg className="svg-icon" 
     aria-hidden="true"
     fill="none"
     focusable="false"
