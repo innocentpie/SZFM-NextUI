@@ -15,7 +15,7 @@ import { ToastContainer } from 'react-toastify';
 export const dynamic = 'auto', dynamicParams = true, fetchCache = 'auto', runtime = 'nodejs', preferredRegion = 'auto';
 
 const getQuizzes = async (page: number = 1, filter: string = '') => {
-  const perPage = 12;
+  const perPage = 9;
   const data = await pb.collection('verifiedQuizzes').getList(page, perPage, {
     sort: '-created',
     filter: filter,
@@ -31,7 +31,7 @@ export default function QuizPage() {
     <>
       <Header quizMainHeaderMode={true} backButton={null} />
       <div className='main-container'>
-        <Suspense fallback={<div><h1><p>Betöltés...</p></h1></div>}>
+        <Suspense fallback={<div><h1><p></p></h1></div>}>
           <QuizContent user={user} />
         </Suspense>
       </div>
@@ -87,7 +87,7 @@ function QuizContent({ user }: QuizContentProps) {
     }
   }, [user, currentPage, searchQuery]);
 
-  if (quizLoading) return (<div><h1><p>Betöltés...</p></h1></div>);
+  if (quizLoading) return (<div><h1><p></p></h1></div>);
 
   if (!user) return null;
 
