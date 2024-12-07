@@ -5,6 +5,8 @@
 import React from 'react';
 import { Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, Button, Divider } from "@nextui-org/react";
 import { useAuth } from '../authentication/AuthContext';
+import avatarImages from '../assets/avatarImages';
+import Image from "next/image";
 
 interface ProfileOptionsModalProps {
   isOpen: boolean;
@@ -44,9 +46,21 @@ const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({ isOpen, onClo
             <ModalHeader style={{color: 'red'}}>Adminisztrátor menü</ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-4">
+                <div className='w-full flex flex-col items-center gap-3'>
+                    <Image
+                      src={avatarImages[user?.profile_picture || "avatar1"] || "/assets/images/defaultAvatar.png"}
+                      alt="Selected Profile Picture"
+                      width={100}
+                      height={100}
+                      className="rounded-full"
+                      />
+                    <div className='text-large'>{user?.username}</div>
+                  </div>
+
                 <Button onPress={handleMyQuizzes}>Felhasználók által készített kvízek</Button>
+                <Button onPress={handleEditProfile}>Profil szerkesztése</Button>
                 <Divider className="my-4" style={{ background: 'red', height: '0.2rem' }} />
-                <Button color="danger" variant="light" onPress={handleLogout}>Kijelentkezés</Button>
+                <Button color="danger" variant="solid" onPress={handleLogout}>Kijelentkezés</Button>
               </div>
             </ModalBody>
             <ModalFooter>
@@ -64,10 +78,21 @@ const ProfileOptionsModal: React.FC<ProfileOptionsModalProps> = ({ isOpen, onClo
             <ModalHeader>Profil Menü</ModalHeader>
             <ModalBody>
               <div className="flex flex-col gap-4">
+                <div className='w-full flex flex-col items-center gap-3'>
+                  <Image
+                    src={avatarImages[user?.profile_picture || "avatar1"] || "/assets/images/defaultAvatar.png"}
+                    alt="Selected Profile Picture"
+                    width={100}
+                    height={100}
+                    className="rounded-full"
+                    />
+                  <div className='text-large'>{user?.username}</div>
+                </div>
+
                 <Button onPress={handleMyQuizzes}>Saját kvízek</Button>
                 <Button onPress={handleEditProfile}>Profil szerkesztése</Button>
                 <Divider className="my-4" style={{ background: 'red', height: '0.2rem' }} />
-                <Button color="danger" variant="light" onPress={handleLogout}>Kijelentkezés</Button>
+                <Button color="danger" variant="solid" onPress={handleLogout}>Kijelentkezés</Button>
               </div>
             </ModalBody>
             <ModalFooter>

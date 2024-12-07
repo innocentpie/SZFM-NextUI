@@ -27,7 +27,8 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 0.25rem;
   width: 97%;
-  flex-grow: 1;
+  margin-bottom: 2rem;
+  /* flex-grow: 1; */
 }
 
 .quiz-card{

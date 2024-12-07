@@ -399,229 +399,232 @@ const MyQuizzesModal: React.FC<MyQuizzesModalProps> = ({ isOpen, onClose }) => {
 
   return (
     <>
-      {editingQuiz && (
-        <Modal isOpen={!!editingQuiz} onClose={() => setEditingQuiz(null)} closeButton backdrop="blur" className={styles.modalWindow}>
-          <ModalContent className={styles.modalContent}>
-            <ModalHeader>Kvíz szerkesztése</ModalHeader>
-            <ModalBody className={styles.modalBody}>
-              <div className={styles.formGroup}>
-                <label>Kvíz leírása (min. 10, max. 400 karakter):</label>
-                <Textarea
-                  value={quizDescription}
-                  onChange={(e) => setQuizDescription(e.target.value)}
-                  required
+      <div className="modal-wrapper">
+        {editingQuiz && (
+          <Modal isOpen={!!editingQuiz} onClose={() => setEditingQuiz(null)} closeButton backdrop="blur" className={styles.modalWindow}>
+            <ModalContent className={styles.modalContent}>
+              <ModalHeader>Kvíz szerkesztése</ModalHeader>
+              <ModalBody className={styles.modalBody}>
+                <div className={styles.formGroup}>
+                  <label>Kvíz leírása (min. 10, max. 400 karakter):</label>
+                  <Textarea
+                    value={quizDescription}
+                    onChange={(e) => setQuizDescription(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Kategória:</label>
+                  <Select
+                    isRequired
+                    defaultSelectedKeys={[category?.label || '']}
+                    placeholder="Válassz kategóriát"
+                    onChange={(e) => {
+                      const selectedCategory = categories.find((cat) => cat.label === e.target.value);
+                      setCategory(selectedCategory);
+                    }}
+                    className={styles.select}
+                    aria-label="Kategória kiválasztása"
+                    renderValue={() =>
+                      category && (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {category.icon}
+                          {category.label}
+                        </span>
+                      )
+                    }
+                  >
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.label} value={cat.label} textValue={cat.label}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {cat.icon}
+                          {cat.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
+                <div className={styles.formGroup}>
+                  <label>Nehézség:</label>
+                  <Select
+                    isRequired
+                    placeholder="Válassz nehézséget"
+                    defaultSelectedKeys={[difficulty?.label || '']}
+                    onChange={(e) => {
+                      const selectedDifficulty = difficulties.find((diff) => diff.label === e.target.value);
+                      setDifficulty(selectedDifficulty);
+                    }}
+                    aria-label="Nehézség kiválasztása"
+                    renderValue={() =>
+                      difficulty && (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {difficulty.icon}
+                          {difficulty.label}
+                        </span>
+                      )
+                    }
+                  >
+                    {difficulties.map((diff) => (
+                      <SelectItem key={diff.label} value={diff.label} textValue={diff.label}>
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          {diff.icon}
+                          {diff.label}
+                        </span>
+                      </SelectItem>
+                    ))}
+                  </Select>
+                </div>
+                <div className={styles.questionsSection}>
+                  <h3>Kérdések:</h3>
+                  {questions.map((question, index) => (
+                    <div key={index} className={styles.questionGroup}>
+                      <div>
+                        <label>Kérdés {index + 1}:</label>
+                        <Input
+                          placeholder="Írd be a kérdést..."
+                          value={questions[index]}
+                          onChange={(e) =>
+                            setQuestions((prev) => {
+                              const updated = [...prev];
+                              updated[index] = e.target.value;
+                              return updated;
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label>Válaszok (pontosvesszővel elválasztva, maximum 4):</label>
+                        <Input
+                          placeholder="Válasz1; Válasz2; Válasz3; Válasz4"
+                          value={answers[index]}
+                          onChange={(e) =>
+                            setAnswers((prev) => {
+                              const updated = [...prev];
+                              updated[index] = e.target.value;
+                              return updated;
+                            })
+                          }
+                        />
+                      </div>
+                      <div>
+                        <label>Helyes válasz (maximum 1):</label>
+                        <Input
+                          placeholder="Írd be a helyes választ..."
+                          value={correctAnswers[index]}
+                          onChange={(e) =>
+                            setCorrectAnswers((prev) => {
+                              const updated = [...prev];
+                              updated[index] = e.target.value;
+                              return updated;
+                            })
+                          }
+                        />
+                      </div>
+                      {questions.length > 1 && (
+                        <Button
+                          color="danger"
+                          size="sm"
+                          onClick={() => removeQuestion(index)}
+                          className={styles.removeButton}
+                        >
+                          Törlés
+                        </Button>
+                      )}
+                      <Divider className={styles.questionDivider} />
+                    </div>
+                  ))}
+                  <Button
+                    color="primary"
+                    onClick={addQuestion}
+                    className={styles.addButton}
+                    startContent={<MdiPlus />}
+                    aria-label="Több kérdés hozzáadása"
+                  >
+                    Több kérdés hozzáadása
+                  </Button>
+                </div>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="primary" onPress={handleEditSubmit}>
+                  Mentés
+                </Button>
+                <Button color="danger" variant="light" onPress={() => setEditingQuiz(null)}>
+                  Mégsem
+                </Button>
+              </ModalFooter>
+            </ModalContent>
+          </Modal>
+        )}
+        <Modal isOpen={isOpen} onClose={handleModalClose} closeButton style={{ top: '1.5rem', position: 'absolute' }}>
+          <ModalContent>
+            <ModalHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Kvízek</span>
+              <div className={styles.inputContainer}>
+                <input
+                  key="default"
+                  type="text"
+                  placeholder="Keresés...(pl. státusz)"
+                  className={styles.customInput}
+                  value={searchTerm}
+                  onChange={(e) => handleSearch(e.target.value)}
                 />
+                <icons.RivetIconsMagnifyingGlass className={styles.icon} />
               </div>
-              <div className={styles.formGroup}>
-                <label>Kategória:</label>
-                <Select
-                  isRequired
-                  defaultSelectedKeys={[category?.label || '']}
-                  placeholder="Válassz kategóriát"
-                  onChange={(e) => {
-                    const selectedCategory = categories.find((cat) => cat.label === e.target.value);
-                    setCategory(selectedCategory);
-                  }}
-                  className={styles.select}
-                  aria-label="Kategória kiválasztása"
-                  renderValue={() =>
-                    category && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {category.icon}
-                        {category.label}
-                      </span>
-                    )
-                  }
-                >
-                  {categories.map((cat) => (
-                    <SelectItem key={cat.label} value={cat.label} textValue={cat.label}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {cat.icon}
-                        {cat.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
-              <div className={styles.formGroup}>
-                <label>Nehézség:</label>
-                <Select
-                  isRequired
-                  placeholder="Válassz nehézséget"
-                  defaultSelectedKeys={[difficulty?.label || '']}
-                  onChange={(e) => {
-                    const selectedDifficulty = difficulties.find((diff) => diff.label === e.target.value);
-                    setDifficulty(selectedDifficulty);
-                  }}
-                  aria-label="Nehézség kiválasztása"
-                  renderValue={() =>
-                    difficulty && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {difficulty.icon}
-                        {difficulty.label}
-                      </span>
-                    )
-                  }
-                >
-                  {difficulties.map((diff) => (
-                    <SelectItem key={diff.label} value={diff.label} textValue={diff.label}>
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                        {diff.icon}
-                        {diff.label}
-                      </span>
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
-              <div className={styles.questionsSection}>
-                <h3>Kérdések:</h3>
-                {questions.map((question, index) => (
-                  <div key={index} className={styles.questionGroup}>
-                    <div>
-                      <label>Kérdés {index + 1}:</label>
-                      <Input
-                        placeholder="Írd be a kérdést..."
-                        value={questions[index]}
-                        onChange={(e) =>
-                          setQuestions((prev) => {
-                            const updated = [...prev];
-                            updated[index] = e.target.value;
-                            return updated;
-                          })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label>Válaszok (pontosvesszővel elválasztva, maximum 4):</label>
-                      <Input
-                        placeholder="Válasz1; Válasz2; Válasz3; Válasz4"
-                        value={answers[index]}
-                        onChange={(e) =>
-                          setAnswers((prev) => {
-                            const updated = [...prev];
-                            updated[index] = e.target.value;
-                            return updated;
-                          })
-                        }
-                      />
-                    </div>
-                    <div>
-                      <label>Helyes válasz (maximum 1):</label>
-                      <Input
-                        placeholder="Írd be a helyes választ..."
-                        value={correctAnswers[index]}
-                        onChange={(e) =>
-                          setCorrectAnswers((prev) => {
-                            const updated = [...prev];
-                            updated[index] = e.target.value;
-                            return updated;
-                          })
-                        }
-                      />
-                    </div>
-                    {questions.length > 1 && (
-                      <Button
-                        color="danger"
-                        size="sm"
-                        onClick={() => removeQuestion(index)}
-                        className={styles.removeButton}
-                      >
+            </ModalHeader>
+            <ModalBody>
+              {loading ? (
+                <div>Betöltés...</div>
+              ) : filteredQuizzes.length === 0 ? (
+                <div>Nincs találat.</div>
+              ) : (
+                <ul>
+                  {filteredQuizzes.map((quiz) => (
+                    <li key={quiz.id}>
+                      <CopyButton quizCode={quiz.quiz_code} />
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <strong>Kategória:</strong> {quiz.category}
+                        {quiz.category && categories.map((cat) => (cat.label === quiz.category ? cat.icon : null))}
+                      </div>
+                      <br />
+                      <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <strong>Nehézség:</strong> {quiz.difficulty}
+                        {quiz.difficulty && difficulties.map((diff) => (diff.label === quiz.difficulty ? diff.icon : null))}
+                      </div>
+                      {renderCreator(quiz)}
+                      {renderVerification(quiz)}
+                      <Button size="sm" color="primary" onPress={() => handleEditQuiz(quiz)} style={{ marginRight: '1rem' }}>
+                        Szerkeszt
+                      </Button>
+                      <Button size="sm" color="danger" onPress={() => handleDelete(quiz.id)}>
                         Törlés
                       </Button>
-                    )}
-                    <Divider className={styles.questionDivider} />
-                  </div>
-                ))}
-                <Button
-                  color="primary"
-                  onClick={addQuestion}
-                  className={styles.addButton}
-                  startContent={<MdiPlus />}
-                  aria-label="Több kérdés hozzáadása"
-                >
-                  Több kérdés hozzáadása
-                </Button>
-              </div>
+                      <Divider className="my-4" style={{ background: 'red', height: '0.2rem' }} />
+                    </li>
+                  ))}
+                </ul>
+              )}
             </ModalBody>
             <ModalFooter>
-              <Button color="primary" onPress={handleEditSubmit}>
-                Mentés
-              </Button>
-              <Button color="danger" variant="light" onPress={() => setEditingQuiz(null)}>
-                Mégsem
+              <Button color="danger" variant="light" onPress={handleModalClose}>
+                Bezárás
               </Button>
             </ModalFooter>
           </ModalContent>
         </Modal>
-      )}
-      <Modal isOpen={isOpen} onClose={handleModalClose} closeButton style={{ top: '1.5rem', position: 'absolute' }}>
-      <ToastContainer stacked limit={5}
-            position="top-center"
-            autoClose={3000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-            />
-        <ModalContent>
-          <ModalHeader style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span>Kvízek</span>
-            <div className={styles.inputContainer}>
-              <input
-                key="default"
-                type="text"
-                placeholder="Keresés...(pl. státusz)"
-                className={styles.customInput}
-                value={searchTerm}
-                onChange={(e) => handleSearch(e.target.value)}
+
+        <ToastContainer stacked limit={5}
+              position="top-center"
+              autoClose={3000}
+              hideProgressBar={false}
+              newestOnTop={false}
+              closeOnClick
+              rtl={false}
+              pauseOnFocusLoss
+              draggable
+              pauseOnHover
+              theme="colored"
               />
-              <icons.RivetIconsMagnifyingGlass className={styles.icon} />
-            </div>
-          </ModalHeader>
-          <ModalBody>
-            {loading ? (
-              <div>Betöltés...</div>
-            ) : filteredQuizzes.length === 0 ? (
-              <div>Nincs találat.</div>
-            ) : (
-              <ul>
-                {filteredQuizzes.map((quiz) => (
-                  <li key={quiz.id}>
-                    <CopyButton quizCode={quiz.quiz_code} />
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <strong>Kategória:</strong> {quiz.category}
-                      {quiz.category && categories.map((cat) => (cat.label === quiz.category ? cat.icon : null))}
-                    </div>
-                    <br />
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <strong>Nehézség:</strong> {quiz.difficulty}
-                      {quiz.difficulty && difficulties.map((diff) => (diff.label === quiz.difficulty ? diff.icon : null))}
-                    </div>
-                    {renderCreator(quiz)}
-                    {renderVerification(quiz)}
-                    <Button size="sm" color="primary" onPress={() => handleEditQuiz(quiz)} style={{ marginRight: '1rem' }}>
-                      Szerkeszt
-                    </Button>
-                    <Button size="sm" color="danger" onPress={() => handleDelete(quiz.id)}>
-                      Törlés
-                    </Button>
-                    <Divider className="my-4" style={{ background: 'red', height: '0.2rem' }} />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </ModalBody>
-          <ModalFooter>
-            <Button color="danger" variant="light" onPress={handleModalClose}>
-              Bezárás
-            </Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      </div>
     </>
   );
 };

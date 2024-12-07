@@ -216,7 +216,6 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
       //alert('Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.');
       toast.success("Kvíz sikeresen létrehozva! Adminisztrátor jóváhagyásra vár.",SuccesOptions)
       clearQuiz();
-      await new Promise(f => setTimeout(f, 2500));
       onClose();
     } catch (error) {
       console.error('Kvíz létrehozási hiba:', error);
@@ -233,8 +232,173 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
   }
 
   return (
-    
-    <Modal isOpen={isOpen} onClose={modalOnClose} closeButton className={styles.modalWindow}>
+    <div className="modal-wrapper">
+      <Modal isOpen={isOpen} onClose={modalOnClose} closeButton className={styles.modalWindow}>
+        <ModalContent className={styles.modalContent}>
+          <ModalHeader>Létrehozás</ModalHeader>
+          <ModalBody className={styles.modalBody}>
+            <div className={styles.formGroup}>
+              
+              <label htmlFor="quiz-description">Kvíz leírása (min. 10, max. 400 karakter):</label>
+              <Textarea
+                id="quiz-description"
+                placeholder="Írj egy leírást a kvízedhez..."
+                value={quizDescription}
+                onChange={(e) => setQuizDescription(e.target.value)}
+                required
+                className={styles.textarea}
+                aria-label="Kvíz leírása"
+              />
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="category">Kategória:</label>
+              <Select
+                id="category"
+                placeholder="Válaszd ki a kategóriát"
+                value={category?.label || ''}
+                onChange={(e) => {
+                  const selectedCategory = categories.find(cat => cat.label === e.target.value);
+                  setCategory(selectedCategory || null);
+                }}
+                required
+                className={styles.select}
+                aria-label="Kategória kiválasztása"
+                renderValue={() =>
+                  category && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {category.icon}
+                      {category.label}
+                    </span>
+                  )
+                }
+              >
+                {categories.map((cat) => (
+                  <SelectItem key={cat.label} value={cat.label} textValue={cat.label}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {cat.icon}
+                      {cat.label}
+                    </span>
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+            <div className={styles.formGroup}>
+              <label>Nehézség:</label>
+              <Select
+                placeholder="Válassz nehézséget"
+                value={difficulty?.label || ''}
+                onChange={(e) => {
+                  const selectedDifficulty = difficulties.find(diff => diff.label === e.target.value);
+                  setDifficulty(selectedDifficulty || null);
+                }}
+                required
+                className={styles.select}
+                aria-label="Nehézség kiválasztása"
+                renderValue={() =>
+                  difficulty && (
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {difficulty.icon}
+                      {difficulty.label}
+                    </span>
+                  )
+                }
+              >
+                {difficulties.map((diff) => (
+                  <SelectItem key={diff.label} value={diff.label} textValue={diff.label}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      {diff.icon}
+                      {diff.label}
+                    </span>
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+            <div className={styles.questionsSection}>
+              <h3>Kérdések:</h3>
+              {questions.map((_, index) => (
+                <div key={index} className={styles.questionGroup}>
+                  <div className={styles.formGroup}>
+                    <label htmlFor={`question-text-${index}`}>Kérdés {index + 1}:</label>
+                    <Input
+                      id={`question-text-${index}`}
+                      placeholder="Írd be a kérdést..."
+                      value={questions[index]}
+                      onChange={(e) => updateQuestion(index, 'question', e.target.value)}
+                      required
+                      className={styles.input}
+                      aria-label={`Kérdés ${index + 1}`}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label htmlFor={`answers-${index}`}>Válaszok (pontosvesszővel elválasztva, maximum 4):</label>
+                    <Input
+                      id={`answers-${index}`}
+                      placeholder="Válasz1; Válasz2; Válasz3; Válasz4"
+                      value={answers[index]}
+                      onChange={(e) => updateQuestion(index, 'answers', e.target.value)}
+                      required
+                      className={styles.input}
+                      aria-label={`Válaszok a ${index + 1}. kérdéshez`}
+                    />
+                  </div>
+                  <div className={styles.formGroup}>
+                    <label htmlFor={`correct-answer-${index}`}>Helyes válasz(maximum 1):</label>
+                    <Input
+                      id={`correct-answer-${index}`}
+                      placeholder="Írd be a helyes választ..."
+                      value={correctAnswer[index]}
+                      onChange={(e) => updateQuestion(index, 'correctAnswer', e.target.value)}
+                      required
+                      className={styles.input}
+                      aria-label={`Helyes válasz a ${index + 1}. kérdéshez`}
+                    />
+                  </div>
+                  {questions.length > 1 && (
+                    <Button
+                      color="danger"
+                      size="sm"
+                      onClick={() => removeQuestion(index)}
+                      className={styles.removeButton}
+                      aria-label={`Kérdés ${index + 1} törlése`}
+                    >
+                      Törlés
+                    </Button>
+                  )}
+                  <Divider className={styles.questionDivider} />
+                </div>
+              ))}
+              <Button
+                color="primary"
+                onClick={addQuestion}
+                className={styles.addButton}
+                startContent={<MdiPlus />}
+                aria-label="Több kérdés hozzáadása"
+              >
+                Több kérdés hozzáadása
+              </Button>
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button
+              color="success"
+              onPress={handleSubmit}
+              disabled={isSubmitting}
+              aria-label="Kvíz létrehozása"
+            >
+              {isSubmitting ? 'Küldés...' : 'Létrehozás'}
+            </Button>
+            <Button
+              color="danger"
+              variant="light"
+              onPress={modalOnClose}
+              disabled={isSubmitting}
+              aria-label="Mégsem"
+            >
+              Mégsem
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
       <ToastContainer stacked limit={5}
         position="top-center"
         autoClose={3000}
@@ -247,171 +411,7 @@ const CreateQuizModal: React.FC<CreateQuizModalProps> = ({ isOpen, onClose }) =>
         pauseOnHover
         theme="colored"
         />
-      <ModalContent className={styles.modalContent}>
-        <ModalHeader>Létrehozás</ModalHeader>
-        <ModalBody className={styles.modalBody}>
-          <div className={styles.formGroup}>
-            
-            <label htmlFor="quiz-description">Kvíz leírása (min. 10, max. 400 karakter):</label>
-            <Textarea
-              id="quiz-description"
-              placeholder="Írj egy leírást a kvízedhez..."
-              value={quizDescription}
-              onChange={(e) => setQuizDescription(e.target.value)}
-              required
-              className={styles.textarea}
-              aria-label="Kvíz leírása"
-            />
-          </div>
-          <div className={styles.formGroup}>
-            <label htmlFor="category">Kategória:</label>
-            <Select
-              id="category"
-              placeholder="Válaszd ki a kategóriát"
-              value={category?.label || ''}
-              onChange={(e) => {
-                const selectedCategory = categories.find(cat => cat.label === e.target.value);
-                setCategory(selectedCategory || null);
-              }}
-              required
-              className={styles.select}
-              aria-label="Kategória kiválasztása"
-              renderValue={() =>
-                category && (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {category.icon}
-                    {category.label}
-                  </span>
-                )
-              }
-            >
-              {categories.map((cat) => (
-                <SelectItem key={cat.label} value={cat.label} textValue={cat.label}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {cat.icon}
-                    {cat.label}
-                  </span>
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-          <div className={styles.formGroup}>
-            <label>Nehézség:</label>
-            <Select
-              placeholder="Válassz nehézséget"
-              value={difficulty?.label || ''}
-              onChange={(e) => {
-                const selectedDifficulty = difficulties.find(diff => diff.label === e.target.value);
-                setDifficulty(selectedDifficulty || null);
-              }}
-              required
-              className={styles.select}
-              aria-label="Nehézség kiválasztása"
-              renderValue={() =>
-                difficulty && (
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {difficulty.icon}
-                    {difficulty.label}
-                  </span>
-                )
-              }
-            >
-              {difficulties.map((diff) => (
-                <SelectItem key={diff.label} value={diff.label} textValue={diff.label}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    {diff.icon}
-                    {diff.label}
-                  </span>
-                </SelectItem>
-              ))}
-            </Select>
-          </div>
-          <div className={styles.questionsSection}>
-            <h3>Kérdések:</h3>
-            {questions.map((_, index) => (
-              <div key={index} className={styles.questionGroup}>
-                <div className={styles.formGroup}>
-                  <label htmlFor={`question-text-${index}`}>Kérdés {index + 1}:</label>
-                  <Input
-                    id={`question-text-${index}`}
-                    placeholder="Írd be a kérdést..."
-                    value={questions[index]}
-                    onChange={(e) => updateQuestion(index, 'question', e.target.value)}
-                    required
-                    className={styles.input}
-                    aria-label={`Kérdés ${index + 1}`}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor={`answers-${index}`}>Válaszok (pontosvesszővel elválasztva, maximum 4):</label>
-                  <Input
-                    id={`answers-${index}`}
-                    placeholder="Válasz1; Válasz2; Válasz3; Válasz4"
-                    value={answers[index]}
-                    onChange={(e) => updateQuestion(index, 'answers', e.target.value)}
-                    required
-                    className={styles.input}
-                    aria-label={`Válaszok a ${index + 1}. kérdéshez`}
-                  />
-                </div>
-                <div className={styles.formGroup}>
-                  <label htmlFor={`correct-answer-${index}`}>Helyes válasz(maximum 1):</label>
-                  <Input
-                    id={`correct-answer-${index}`}
-                    placeholder="Írd be a helyes választ..."
-                    value={correctAnswer[index]}
-                    onChange={(e) => updateQuestion(index, 'correctAnswer', e.target.value)}
-                    required
-                    className={styles.input}
-                    aria-label={`Helyes válasz a ${index + 1}. kérdéshez`}
-                  />
-                </div>
-                {questions.length > 1 && (
-                  <Button
-                    color="danger"
-                    size="sm"
-                    onClick={() => removeQuestion(index)}
-                    className={styles.removeButton}
-                    aria-label={`Kérdés ${index + 1} törlése`}
-                  >
-                    Törlés
-                  </Button>
-                )}
-                <Divider className={styles.questionDivider} />
-              </div>
-            ))}
-            <Button
-              color="primary"
-              onClick={addQuestion}
-              className={styles.addButton}
-              startContent={<MdiPlus />}
-              aria-label="Több kérdés hozzáadása"
-            >
-              Több kérdés hozzáadása
-            </Button>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <Button
-            color="success"
-            onPress={handleSubmit}
-            disabled={isSubmitting}
-            aria-label="Kvíz létrehozása"
-          >
-            {isSubmitting ? 'Küldés...' : 'Létrehozás'}
-          </Button>
-          <Button
-            color="danger"
-            variant="light"
-            onPress={modalOnClose}
-            disabled={isSubmitting}
-            aria-label="Mégsem"
-          >
-            Mégsem
-          </Button>
-        </ModalFooter>
-      </ModalContent>
-    </Modal>
+    </div>
   );
 };
 
