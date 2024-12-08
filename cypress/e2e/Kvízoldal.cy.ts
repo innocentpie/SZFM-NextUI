@@ -1,6 +1,6 @@
-describe('template spec', () => {
+describe('Kvízoldal tests', () => {
   //###################################################################################
-  let user = "almafej86887" //REVRITE THIS BEFORE TEST
+  let user = "almafej8687" //REVRITE THIS BEFORE TEST
 
   it('Reaches Website', () => {
     
@@ -175,6 +175,8 @@ describe('template spec', () => {
     cy.get('.answers-div > :nth-child(2)').click({ force: true })
     cy.wait(3000)
     cy.get('.answers-div > :nth-child(3)').click({ force: true })
+    cy.wait(3000)
+    cy.get('.answers-div > :nth-child(2)').click({ force: true })
     cy.wait(3000)
     cy.get('.center-col > .overflow-hidden').contains("Gratulálunk!")
     cy.wait(1000)
