@@ -119,6 +119,12 @@ export default function Header({ quizMainHeaderMode, backButton }: { quizMainHea
       <nav className={styles.navigation}>
         <div className='flex flex-row grow'>
 
+        {backButton != null &&
+        <Button onClick={backButton} className={styles.backButton} isIconOnly variant="faded" aria-label="Vissza">
+          <BackIcon/>
+        </Button>
+        }
+
         {quizMainHeaderMode &&
           <div className={styles.inputContainer}>
             <input
@@ -198,11 +204,6 @@ export default function Header({ quizMainHeaderMode, backButton }: { quizMainHea
             <span>Létrehozás</span>
             <MdiPlus />
           </Button>
-        }
-        {backButton != null &&
-        <Button onClick={backButton} className={styles.backButton} isIconOnly variant="faded" aria-label="Vissza">
-          <BackIcon/>
-        </Button>
         }
       </nav>
       <div className={styles.titleContainer}>
