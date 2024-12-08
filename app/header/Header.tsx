@@ -159,7 +159,7 @@ export default function Header({ quizMainHeaderMode, backButton }: { quizMainHea
             >
               {[{ label: 'Összes kategória', icon: <div></div>}].concat(categoriesCap).map((cat) => (
                 <DropdownItem key={cat.label}>
-                  <div className={styles.catdropdowndiv}>
+                  <div style={{minHeight: '2rem'}} className={styles.catdropdowndiv}>
                     {cat.icon}
                     {cat.label}
                   </div>
@@ -189,7 +189,7 @@ export default function Header({ quizMainHeaderMode, backButton }: { quizMainHea
             >
               {[{ label: 'Összes nehézség', icon: <div></div>}].concat(difficulties).map((cat) => (
                 <DropdownItem key={cat.label}>
-                  <div className={styles.catdropdowndivnofill}>
+                  <div style={{minHeight: '2rem'}} className={styles.catdropdowndivnofill}>
                     {cat.icon}
                     {cat.label}
                   </div>
