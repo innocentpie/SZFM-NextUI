@@ -1,6 +1,6 @@
 describe('Kvízoldal tests', () => {
   //###################################################################################
-  let user = "almafej8687" //REVRITE THIS BEFORE TEST
+  let user = "almafej87" //REVRITE THIS BEFORE TEST
 
   it('Reaches Website', () => {
     
@@ -166,7 +166,8 @@ describe('Kvízoldal tests', () => {
     cy.get('[data-has-helper="true"] > .tap-highlight-transparent').type("asd@gmail.com")
     cy.get('.KvizoldalLogin_inputWrapper__jlkvs > :nth-child(2) > .relative').type("asd12345").type("{enter}")
     cy.wait(1000)
-    cy.get(':nth-child(1) > .rounded-b-large > :nth-child(1) > .z-0').click({ force: true })
+    cy.visit('http://localhost:3000/quiz/7CZFA')
+    //cy.get(':nth-child(1) > .rounded-b-large > :nth-child(1) > .z-0').click({ force: true })
     cy.wait(3000)
     cy.get('.answers-div > :nth-child(1)').click({ force: true })
     cy.wait(3000)
